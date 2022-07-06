@@ -1,0 +1,189 @@
+---
+title: 'GSoC Week 1:  June/06-June/09'
+author: "Erick Calderon-Morales"
+text: "Mentor "
+output:
+  prettydoc::html_pretty:
+    highlight: pygments
+    theme: cayman
+    toc: yes
+    number_sections: no
+    toc_depth: 2
+---
+
+# Remote execution 
+
++ __For the remote execution task I was able to create a tunnel following the PEcAn documentation, however this only worked when I used the tmp folder inside the SCC.__
+
+```{bash eval = FALSE}
+# Remote access ----------------------------------------------------------------
+# Step 1: Create tunnel in BASH
+ssh -n -N -f -o ControlMaster=yes -S /tmp/ecalder1_gsoc_1 ecalder1@geo.bu.edu
+```
+
+```{r eval = FALSE}
+# Step 2: access tunnel
+scc_host <- list(name = "geo.bu.edu", tunnel = "/tmp/ecalder1_gsoc_1")
+ 
+# Step 3: Test that is working
+PEcAn.remote::remote.execute.cmd(host = scc_host,
+                                  cmd = "echo", args = "Hello world")
+```
+
+
++ __I tried to create the tunnel using a different path but I was unsuccessful and I got the error:__
+
+`unix_listener`: __cannot bind to path /usr2/collab/ecalder1/tunnel/ecalder1_gsoc_1.QVMno7DENxYuUiFl: No such file or directory__
+
+
+```{bash eval = FALSE}
+ssh -n -N -f -o ControlMaster=yes -S /usr2/collab/ecalder1/tunnel/ecalder1_gsoc_1 ecalder1@geo.bu.edu
+ 
+ssh -nNf -o ControlMaster=yes -S /projectnb/dietzelab/ecalder1/tunnel/ecalder1_gsoc_1 ecalder1@geo.bu.edu
+```
+
+
+# Meta-Analysis and Ensemble 
+
++ __I created a test XML file for running and ensemble and a meta-analysis locally. For this I tried to combine Alexis' pecan.CONFIGS.xml file with this other [XML file](https://gist.github.com/dlebauer/7a02538ac06ce4bab6354f1d226555dc).__
+
+
+## Test XML file 
+
+```{xml}
+<?xml version="1.0"?>
+<pecan>
+  
+ <info>
+  <notes>Daily Forecast SIPNET Site</notes>
+  <userid>1000012038</userid>
+  <username>ecalder1</username>
+  <date>2022/06/09</date>
+ </info>
+ 
+ <database>
+    <bety>
+      <user>bety</user>
+      <password>bety</password>
+      <host>postgres</host>
+      <dbname>bety</dbname>
+      <driver>PostgreSQL</driver>
+      <port>5432</port>
+      <write>true</write>
+    </bety>
+    <dbfiles>/home/carya/gsoc/pecan.data/dbfiles</dbfiles>
+ </database>
+ 
+ <host>
+  <name>geo.bu.edu</name>
+  <user>ecalder1</user>
+  <outdir>/home/carya/gsoc/ecalder1/Jobs/out</outdir>
+ </host>
+ 
+ 
+ <pfts>
+  <pft>
+   <name>temperate.deciduous.HPDA</name>
+   <constants>
+    <num>1</num>
+   </constants>
+   <posteriorid>1000022311</posteriorid>
+   <outdir>/home/carya/gsoc/output/PEcAn_1000010530/pft/temperate.deciduous.HPDA</outdir>
+  </pft>
+ </pfts>
+ 
+ <meta.analysis>
+  <iter>3000</iter>
+  <random.effects>
+   <on>FALSE</on>
+   <use_ghs>FALSE</use_ghs>
+  </random.effects>
+  <threshold>1.2</threshold>
+  <update>AUTO</update>
+ </meta.analysis>
+ 
+ <ensemble>
+    <size>100</size>
+    <variable>GPP</variable>
+    <start.year>2020</start.year>
+    <end.year>2020</end.year>
+    <samplingspace>
+     <parameters>
+      <method>uniform</method>
+     </parameters>
+     
+    <met>
+     <method>sampling</method>
+    </met>
+    <soil>
+     <parent>parameters</parent>
+    </soil>
+    <vegetation>
+     <parent>soil</parent>
+    </vegetation>
+   </samplingspace>
+  <ensemble.id>1000033746</ensemble.id>
+ </ensemble>
+
+</pecan>
+```
+
+
++ __With this test XML I was able to run the meta analysis however I couldn't run the ensemble__
+
+```{r message=FALSE, warning=FALSE}
+# Load packages ----------------------------------------------------------------
+library(PEcAn.all)
+library(PEcAn.utils)
+library(PEcAn.workflow)
+setwd("/home/carya")
+getwd()
+```
+
+
+```{r message=TRUE, warning=TRUE}
+# Read settings file -----------------------------------------------------------
+settings <- read.settings("/home/carya/gsoc/pecan.xml")
+```
+
+```{r error = TRUE}
+# Test get trait data function -------------------------------------------------
+get.trait.data(settings$pfts, settings$model$type, 
+                                settings$database$dbfiles, 
+                                settings$database$bety, 
+                                settings$meta.analysis$update)
+```
+`Error: Column `name` not found in `.data` Run `rlang::last_error()` to see where the error occurred.`
+
+## Meta Analysis
+
+```{r error = TRUE}
+# Run meta analysis ------------------------------------------------------------
+PEcAn.MA::runModule.run.meta.analysis(settings)
+```
+## Ensemble
+
+```{r error =TRUE}
+# Run ensemble -----------------------------------------------------------------
+dir.create(settings$pfts$pft$outdir, recursive = TRUE, showWarnings = FALSE)
+dir.create(settings$database$dbfiles, recursive = TRUE, showWarnings = FALSE)
+
+
+runModule.run.ensemble.analysis(settings, TRUE)
+
+```
+
+
++ __I tried to run the xml test file remotely but I was unsuccessful__ 
+```{r error = TRUE}
+PEcAn.remote::runModule.start.model.runs(settings = settings)
+```
+
+
+
+## Need guidence on...
+
++ __Identify what errors I am making on the test XML file that I created for being able to run the Ensemble__
++ __How to run XML files on the SCC__
+
+
