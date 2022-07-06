@@ -1,7 +1,6 @@
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
-library(janitor)
-install.packages("janitor")
+
 # Working directory ------------------------------------------------------------
 setwd('/home/carya')
 getwd()
@@ -16,7 +15,7 @@ path <- paste0('./gsoc_project_2022/pecan_runs/run_', Sys.Date())
 
 settings$outdir <- file.path(path)
 
-settings$ensemble$size <- 1
+settings$ensemble$size <- 100
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
 

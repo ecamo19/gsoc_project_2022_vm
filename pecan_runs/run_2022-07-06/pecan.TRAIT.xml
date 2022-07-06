@@ -12,14 +12,11 @@
   </bety>
   <dbfiles>/home/carya/./gsoc_project_2022/pecan_runs/run_2022-07-06/dbfiles</dbfiles>
  </database>
- <bety>
-  <write>FALSE</write>
- </bety>
  <pfts>
   <pft>
    <name>populus</name>
    <outdir>./gsoc_project_2022/pecan_runs/run_2022-07-06/pft/populus</outdir>
-   <posteriorid>99000000057</posteriorid>
+   <posteriorid>99000000058</posteriorid>
   </pft>
  </pfts>
  <meta.analysis>
@@ -33,7 +30,7 @@
  </meta.analysis>
  <ensemble>
   <variable>StemBiom</variable>
-  <size>1</size>
+  <size>100</size>
   <samplingspace>
    <parameters>
     <method>lhc</method>
@@ -70,7 +67,7 @@
   <checked>TRUE</checked>
  </settings.info>
  <workflow>
-  <id>99000000062</id>
+  <id>99000000063</id>
  </workflow>
  <rundir>/home/carya/./gsoc_project_2022/pecan_runs/run_2022-07-06/run</rundir>
  <modeloutdir>/home/carya/./gsoc_project_2022/pecan_runs/run_2022-07-06/out</modeloutdir>
