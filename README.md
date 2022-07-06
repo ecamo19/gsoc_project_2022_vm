@@ -35,3 +35,6 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 4 directories, 17 files
 
 ```
+
+![Alt text](./gsoc_logo.png "Optional title")
+
