@@ -1,3 +1,6 @@
+
+![Alt text](./gsoc_logo_2.png "Optional title ")
+
 # [Sobol Variance Partitioning Implementation for PEcAn’s uncertainty module](https://summerofcode.withgoogle.com/programs/2022/projects/FzRn47Nh)
 
 ## Description:
@@ -36,5 +39,5 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 ```
 
-![Alt text](./gsoc_logo_2.png "Optional title ")
+
 
