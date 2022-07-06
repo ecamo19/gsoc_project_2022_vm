@@ -1,0 +1,805 @@
+---
+title: 'Functions documentation'
+author: "Erick Calderon-Morales"
+date: ' Fall 2021'
+due_date: ""
+output:
+  prettydoc::html_pretty:
+    highlight: pygments
+    theme: cayman
+    toc: yes
+    number_sections: no
+    toc_depth: 2
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,comment = "", fig.align = 'center',
+					  fig.width = 11, fig.height = 7)
+```
+
+
+
+```{r knitr, include = FALSE}
+
+# Save figures in specific place
+
+knitr::opts_chunk$set(autodep        = TRUE,
+                      cache          = FALSE,
+                      cache.comments = TRUE,
+                      
+                      # Include code?
+                      echo           = TRUE,
+                      
+                      error          = FALSE,
+                      fig.align      = "center",
+                      
+                      # Path to where to store pdf single figures 
+                    
+                      #fig.path       = paste0("hw1_figures", "/"),
+                      fig.width      = 11,
+                      fig.height     = 7,
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+
+```{r cleanup-docs, cache = FALSE,echo = FALSE}
+
+# # save a html copy file in a specific place
+# doc.files <- c(list.files(pattern = "pdf"),
+#                list.files(pattern = "html"),
+#                list.files(pattern = "docx"))
+# 
+# for (file in doc.files) {
+#   cambiar nombre
+#     file.rename(file, file.path("../../hw1/", file))
+# }
+```
+
+
+# Load packages
+
+```{r}
+library(PEcAn.all)
+devtools::session_info()$packages
+```
+
+
+# Load xml file
+
+```{r}
+settings <- PEcAn.settings::read.settings("./xml_files/pecan.CONFIGS_2.xml") 
+```
+
+
+# Functions  
+
+## run.write.configs
+
+__Location: base/workflow/R/run.write.configs.R__
+
++ This function is a workflow! Q: Does this workflow call the ensemble.R file?
+
+### Original function
+
+```{r eval = FALSE}
+#' Write model-specific run scripts and configuration files
+#'
+#' Generates run scripts and configuration files for all analyses specified
+#' in the provided settings. Most of the heavy lifting is done by the
+#' \code{write.config.*} function for your specific ecosystem model
+#' (e.g. write.config.ED2, write.config.SIPNET).
+#'
+#' @param settings a PEcAn settings list
+#' @param write should the runs be written to the database?
+#' @param ens.sample.method how to sample the ensemble members('halton' sequence or 'uniform' random)
+#' @param posterior.files Filenames for posteriors for drawing samples for ensemble and sensitivity
+#'    analysis (e.g. post.distns.Rdata, or prior.distns.Rdata)
+#' @param overwrite logical: Replace output files that already exist?
+#'
+#' @details The default value for \code{posterior.files} is NA, in which case the
+#'    most recent posterior or prior (in that order) for the workflow is used.
+#'    When specified, \code{posterior.files} should be a vector of filenames with one entry for each PFT.
+#'    Specify filenames with no path; PFT outdirs will be appended. This forces use of only
+#'    files within this workflow, to avoid confusion.
+#'
+#' @return an updated settings list, which includes ensemble IDs for SA and ensemble analysis
+#' @export
+#'
+#' @author David LeBauer, Shawn Serbin, Ryan Kelly, Mike Dietze
+run.write.configs <- function(settings, write = TRUE, ens.sample.method = "uniform", 
+                              posterior.files = rep(NA, length(settings$pfts)), 
+                              overwrite = TRUE) {
+  
+  ## Which posterior to use?
+  for (i in seq_along(settings$pfts)) {
+    ## if posterior.files is specified us that
+    if (is.na(posterior.files[i])) {
+      ## otherwise, check to see if posteriorid exists
+      if (!is.null(settings$pfts[[i]]$posteriorid)) {
+        
+        tryCatch({
+          con <- PEcAn.DB::db.open(settings$database$bety)
+          on.exit(PEcAn.DB::db.close(con), add = TRUE)
+        }, error = function(e) {
+          PEcAn.logger::logger.severe(
+            "Connection requested, but failed to open with the following error: ",
+            conditionMessage(e))
+        })
+  
+        files <- PEcAn.DB::dbfile.check("Posterior",
+                              settings$pfts[[i]]$posteriorid, 
+                              con, settings$host$name, return.all = TRUE)
+        pid <- grep("post.distns.*Rdata", files$file_name)  ## is there a posterior file?
+        if (length(pid) == 0) {
+          pid <- grep("prior.distns.Rdata", files$file_name)  ## is there a prior file?
+        }
+        if (length(pid) > 0) {
+          posterior.files[i] <- file.path(files$file_path[pid], files$file_name[pid])
+        }  ## otherwise leave posteriors as NA
+      }
+      ## otherwise leave NA and get.parameter.samples will look for local
+    }
+  }
+  
+  ## Sample parameters
+  model <- settings$model$type
+  scipen <- getOption("scipen")
+  options(scipen = 12)
+
+  PEcAn.uncertainty::get.parameter.samples(settings, posterior.files, ens.sample.method)
+  load(file.path(settings$outdir, "samples.Rdata"))
+  
+  ## remove previous runs.txt
+  if (overwrite && file.exists(file.path(settings$rundir, "runs.txt"))) {
+    PEcAn.logger::logger.warn("Existing runs.txt file will be removed.")
+    unlink(file.path(settings$rundir, "runs.txt"))
+  }
+  
+  PEcAn.utils::load.modelpkg(model)
+  
+  ## Check for model-specific write configs
+  
+  my.write.config <- paste0("write.config.",model)
+  if (!exists(my.write.config)) {
+    PEcAn.logger::logger.error(my.write.config, 
+                 "does not exist, please make sure that the model package contains a function called", 
+                 my.write.config)
+  }
+  
+  ## Prepare for model output.  Clean up any old config files (if exists)
+  my.remove.config <- paste0("remove.config.", model)
+  if (exists(my.remove.config)) {
+    do.call(my.remove.config, args = list(settings$rundir, settings))
+  }
+  
+  # TODO RK : need to write to runs_inputs table
+  
+  # Save names
+  pft.names <- names(trait.samples)
+  trait.names <- lapply(trait.samples, names)
+  
+  ### NEED TO IMPLEMENT: Load Environmental Priors and Posteriors
+  
+  ### Sensitivity Analysis
+  if ("sensitivity.analysis" %in% names(settings)) {
+    
+    ### Write out SA config files
+    PEcAn.logger::logger.info("\n ----- Writing model run config files ----")
+    sa.runs <- PEcAn.uncertainty::write.sa.configs(defaults = settings$pfts,
+                                quantile.samples = sa.samples, 
+                                settings = settings, 
+                                model = model,
+                                write.to.db = write)
+    
+    # Store output in settings and output variables
+    runs.samples$sa <- sa.run.ids <- sa.runs$runs
+    settings$sensitivity.analysis$ensemble.id <- sa.ensemble.id <- sa.runs$ensemble.id
+    
+    # Save sensitivity analysis info
+    fname <- PEcAn.uncertainty::sensitivity.filename(settings, "sensitivity.samples", "Rdata",
+                                  all.var.yr = TRUE, pft = NULL)
+    save(sa.run.ids, sa.ensemble.id, sa.samples, pft.names, trait.names, file = fname)
+    
+  }  ### End of SA
+  
+  ### Write ENSEMBLE
+  if ("ensemble" %in% names(settings)) {
+    ens.runs <- PEcAn.uncertainty::write.ensemble.configs(defaults = settings$pfts,
+                                       ensemble.samples = ensemble.samples, 
+                                       settings = settings,
+                                       model = model, 
+                                       write.to.db = write)
+    
+    # Store output in settings and output variables
+    runs.samples$ensemble <- ens.run.ids <- ens.runs$runs
+    settings$ensemble$ensemble.id <- ens.ensemble.id <- ens.runs$ensemble.id
+    ens.samples <- ensemble.samples  # rename just for consistency
+    
+    # Save ensemble analysis info
+    fname <- PEcAn.uncertainty::ensemble.filename(settings, "ensemble.samples", "Rdata", all.var.yr = TRUE)
+    save(ens.run.ids, ens.ensemble.id, ens.samples, pft.names, trait.names, file = fname)
+  } else {
+    PEcAn.logger::logger.info("not writing config files for ensemble, settings are NULL")
+  }  ### End of Ensemble
+  
+  PEcAn.logger::logger.info("###### Finished writing model run config files #####")
+  PEcAn.logger::logger.info("config files samples in ", file.path(settings$outdir, "run"))
+  
+  ### Save output from SA/Ensemble runs
+  # A lot of this is duplicate with the ensemble/sa specific output above, but kept for backwards compatibility.   
+  save(ensemble.samples, trait.samples, sa.samples, runs.samples, pft.names, trait.names, 
+       file = file.path(settings$outdir, "samples.Rdata"))
+  PEcAn.logger::logger.info("parameter values for runs in ", file.path(settings$outdir, "samples.RData"))
+  options(scipen = scipen)
+  
+  return(invisible(settings))
+}
+
+```
+
+
+## write.ensemble.configs
+
+ensemble write configs sub-function
+
+__Location: pecan/modules/uncertainty/R/ensemble.R line 211 __
+
+Ensemble.R is compose of 4 functions;:
+
++ `read.ensemble.output`   --> f4 Function used after SA and ensemble were run?
++ `get.ensemble.samples`   --> f1
++ `write.ensemble.configs` --> f2 needs ensemble.samples generated by get.ensemble.samples 
++ `input.ens.gen`          --> f3
+
+### Original function
+
+#### f4 read.ensemble.output
+
+```{r eval = FALSE}
+#-------------------------------------------------------------------------------
+# Copyright (c) 2012 University of Illinois, NCSA.
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the 
+# University of Illinois/NCSA Open Source License
+# which accompanies this distribution, and is available at
+# http://opensource.ncsa.illinois.edu/license.html
+#-------------------------------------------------------------------------------
+
+##' Reads output from model ensemble
+##'
+##' Reads output for an ensemble of length specified by \code{ensemble.size} and bounded by \code{start.year} 
+##' and \code{end.year}
+##' @title Read ensemble output
+##' @return a list of ensemble model output 
+##' @param ensemble.size the number of ensemble members run
+##' @param pecandir specifies where pecan writes its configuration files
+##' @param outdir directory with model output to use in ensemble analysis
+##' @param start.year first year to include in ensemble analysis
+##' @param end.year last year to include in ensemble analysis
+##' @param variable target variables for ensemble analysis
+##' @param ens.run.ids dataframe. Must contain a column named "id" giving the run IDs to be read.
+##'   If NULL, will attempt to read IDs from a file named "samples.Rdata" in \code{pecandir}
+##' @export
+##' @author Ryan Kelly, David LeBauer, Rob Kooper
+#--------------------------------------------------------------------------------------------------#
+read.ensemble.output <- function(ensemble.size, pecandir, outdir, start.year, end.year, 
+                                 variable, ens.run.ids = NULL) {
+  if (is.null(ens.run.ids)) {
+    samples.file <- file.path(pecandir, "samples.Rdata")
+    if (file.exists(samples.file)) {
+      load(samples.file)
+      ens.run.ids <- runs.samples$ensemble
+    } else {
+      stop(samples.file, "not found required by read.ensemble.output")
+    }
+  }
+  
+  expr <- variable$expression
+  variables <- variable$variables
+  
+  ensemble.output <- list()
+  for (row in rownames(ens.run.ids)) {
+    run.id <- ens.run.ids[row, "id"]
+    PEcAn.logger::logger.info("reading ensemble output from run id: ", format(run.id, scientific = FALSE))
+
+    for(var in seq_along(variables)){
+      out.tmp <- PEcAn.utils::read.output(run.id, file.path(outdir, run.id), start.year, end.year, variables[var])
+      assign(variables[var], out.tmp[[variables[var]]])
+    }
+    
+    # derivation
+    out <- eval(parse(text = expr))
+    
+    ensemble.output[[row]] <- mean(out, na.rm= TRUE) 
+    
+  }
+  return(ensemble.output)
+} # read.ensemble.output
+```
+
+
+#### f1 get.ensemble.samples 
+
+```{r eval = FALSE}
+##' Get parameter values used in ensemble
+##'
+##' Returns a matrix of randomly or quasi-randomly sampled trait values 
+##' to be assigned to traits over several model runs.
+##' given the number of model runs and a list of sample distributions for traits
+##' The model run is indexed first by model run, then by trait
+##' 
+##' @title Get Ensemble Samples
+##' @name get.ensemble.samples
+##' @param ensemble.size number of runs in model ensemble
+##' @param pft.samples random samples from parameter distribution, e.g. from a MCMC chain  
+##' @param env.samples env samples
+##' @param method the method used to generate the ensemble samples. Random generators: uniform, uniform with latin hypercube permutation. Quasi-random generators: halton, sobol, torus. Random generation draws random variates whereas quasi-random generation is deterministic but well equidistributed. Default is uniform. For small ensemble size with relatively large parameter number (e.g ensemble size < 5 and # of traits > 5) use methods other than halton. 
+##' @param param.names a list of parameter names that were fitted either by MA or PDA, important argument, if NULL parameters will be resampled independently
+##' @param ... Other arguments passed on to the sampling method
+##' 
+##' @return matrix of (quasi-)random samples from trait distributions
+##' @export
+##' @author David LeBauer, Istem Fer
+get.ensemble.samples <- function(ensemble.size, pft.samples, env.samples, 
+                                 method = "uniform", param.names = NULL, ...) {
+  
+  if (is.null(method)) {
+    PEcAn.logger::logger.info("No sampling method supplied, defaulting to uniform random sampling")
+    method <- "uniform"
+  }
+  
+  ## force as numeric for compatibility with Fortran code in halton()
+  ensemble.size <- as.numeric(ensemble.size)
+  if (ensemble.size <= 0) {
+    ans <- NULL
+  } else if (ensemble.size == 1) {
+    ans <- PEcAn.utils::get.sa.sample.list(pft.samples, env.samples, 0.5)
+  } else {
+    pft.samples[[length(pft.samples) + 1]] <- env.samples
+    names(pft.samples)[length(pft.samples)] <- "env"
+    pft2col <- NULL
+    for (i in seq_along(pft.samples)) {
+      pft2col <- c(pft2col, rep(i, length(pft.samples[[i]])))
+    }
+    
+    total.sample.num <- sum(sapply(pft.samples, length))
+    random.samples <- NULL
+    
+    
+    if (method == "halton") {
+      PEcAn.logger::logger.info("Using ", method, "method for sampling")
+      random.samples <- randtoolbox::halton(n = ensemble.size, dim = total.sample.num, ...)
+      ## force as a matrix in case length(samples)=1
+      random.samples <- as.matrix(random.samples)
+    } else if (method == "sobol") {
+      PEcAn.logger::logger.info("Using ", method, "method for sampling")
+      random.samples <- randtoolbox::sobol(n = ensemble.size, dim = total.sample.num, scrambling = 3, ...)
+      ## force as a matrix in case length(samples)=1
+      random.samples <- as.matrix(random.samples)
+    } else if (method == "torus") {
+      PEcAn.logger::logger.info("Using ", method, "method for sampling")
+      random.samples <- randtoolbox::torus(n = ensemble.size, dim = total.sample.num, ...)
+      ## force as a matrix in case length(samples)=1
+      random.samples <- as.matrix(random.samples)
+    } else if (method == "lhc") {
+      PEcAn.logger::logger.info("Using ", method, "method for sampling")
+      random.samples <- PEcAn.emulator::lhc(t(matrix(0:1, ncol = total.sample.num, nrow = 2)), ensemble.size)
+    } else if (method == "uniform") {
+      PEcAn.logger::logger.info("Using ", method, "random sampling")
+      # uniform random
+      random.samples <- matrix(stats::runif(ensemble.size * total.sample.num),
+                               ensemble.size, 
+                               total.sample.num)
+    } else {
+      PEcAn.logger::logger.info("Method ", method, " has not been implemented yet, using uniform random sampling")
+      # uniform random
+      random.samples <- matrix(stats::runif(ensemble.size * total.sample.num),
+                               ensemble.size, 
+                               total.sample.num)
+    }
+    
+    
+    ensemble.samples <- list()
+    
+    
+    col.i <- 0
+    for (pft.i in seq(pft.samples)) {
+      ensemble.samples[[pft.i]] <- matrix(nrow = ensemble.size, ncol = length(pft.samples[[pft.i]]))
+      
+      # meaning we want to keep MCMC samples together
+      if(length(pft.samples[[pft.i]])>0 & !is.null(param.names)){ 
+        if (method == "halton") {
+          same.i <- round(randtoolbox::halton(ensemble.size) * length(pft.samples[[pft.i]][[1]]))
+        } else if (method == "sobol") {
+          same.i <- round(randtoolbox::sobol(ensemble.size, scrambling = 3) * length(pft.samples[[pft.i]][[1]]))
+        } else if (method == "torus") {
+          same.i <- round(randtoolbox::torus(ensemble.size) * length(pft.samples[[pft.i]][[1]]))
+        } else if (method == "lhc") {
+          same.i <- round(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, nrow = 2)), ensemble.size) * length(pft.samples[[pft.i]][[1]])))
+        } else if (method == "uniform") {
+          same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
+        } else {
+          PEcAn.logger::logger.info("Method ", method, " has not been implemented yet, using uniform random sampling")
+          # uniform random
+          same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
+        }
+        
+      }
+      
+      for (trait.i in seq(pft.samples[[pft.i]])) {
+        col.i <- col.i + 1
+        if(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]){ # keeping samples
+          ensemble.samples[[pft.i]][, trait.i] <- pft.samples[[pft.i]][[trait.i]][same.i]
+        }else{
+          ensemble.samples[[pft.i]][, trait.i] <- stats::quantile(pft.samples[[pft.i]][[trait.i]],
+                                                                  random.samples[, col.i])
+        }
+      }  # end trait
+      ensemble.samples[[pft.i]] <- as.data.frame(ensemble.samples[[pft.i]])
+      colnames(ensemble.samples[[pft.i]]) <- names(pft.samples[[pft.i]])
+    }  #end pft
+    names(ensemble.samples) <- names(pft.samples)
+    ans <- ensemble.samples
+  }
+  return(ans)
+} # get.ensemble.samples
+```
+
+#### f2 write.ensemble.configs
+
+```{r eval = FALSE}
+##' Write ensemble config files
+##'
+##' Writes config files for use in meta-analysis and returns a list of run ids.
+##' Given a pft.xml object, a list of lists as supplied by get.sa.samples, 
+##' a name to distinguish the output files, and the directory to place the files.
+##'
+##' @param defaults pft
+##' @param ensemble.samples list of lists supplied by \link{get.ensemble.samples}
+##' @param settings list of PEcAn settings
+##' @param model name of model to be run, e.g. "ED2" or "SIPNET"
+##' @param clean remove old output first?
+##' @param write.to.db logical: Record this run in BETY?
+##' @param restart In case this is a continuation of an old simulation. restart needs to be a list with name tags of runid, inputs, new.params (parameters), new.state (initial condition), ensemble.id (ensemble id), start.time and stop.time.See Details.
+##'
+##' @return list, containing $runs = data frame of runids, $ensemble.id = the ensemble ID for these runs and $samples with ids and samples used for each tag.  Also writes sensitivity analysis configuration files as a side effect
+##' @details The restart functionality is developed using model specific functions by calling write_restart.modelname function. First, you need to make sure that this function is already exist for your desired model.See here \url{https://pecanproject.github.io/pecan-documentation/master/pecan-models.html}
+##' new state is a dataframe with a different column for each state variable. The number of the rows in this dataframe needs to be the same as the ensemble size.
+##' State variables that you can use for setting up the intial conditions differs for different models. You may check the documentation of the write_restart.modelname your model.
+##' The units for the state variables need to be in the PEcAn standard units which can be found in \link{standard_vars}.
+##' new.params also has similar structure to ensemble.samples which is sent as an argument.
+##'
+##' @importFrom dplyr %>%
+##' @export
+##' @author David LeBauer, Carl Davidson, Hamze Dokoohaki
+write.ensemble.configs <- function(defaults, ensemble.samples, settings, model, 
+                                   clean = FALSE, write.to.db = TRUE,restart=NULL) {
+  
+  con <- NULL
+  my.write.config <- paste("write.config.", model, sep = "")
+  my.write_restart <- paste0("write_restart.", model)
+  
+  if (is.null(ensemble.samples)) {
+    return(list(runs = NULL, ensemble.id = NULL))
+  }
+  
+  # See if we need to write to DB
+  write.to.db <- as.logical(settings$database$bety$write)
+  
+  if (write.to.db) {
+    # Open connection to database so we can store all run/ensemble information
+    con <-
+      try(PEcAn.DB::db.open(settings$database$bety))
+    on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
+    
+    # If we fail to connect to DB then we set to NULL
+    if (inherits(con, "try-error"))  {
+      con <- NULL
+      PEcAn.logger::logger.warn("We were not able to successfully establish a connection with Bety ")
+    }
+  }
+
+
+  
+  # Get the workflow id
+  if (!is.null(settings$workflow$id)) {
+    workflow.id <- settings$workflow$id
+  } else {
+    workflow.id <- -1
+  }
+  #------------------------------------------------- if this is a new fresh run------------------  
+  if (is.null(restart)){
+    # create an ensemble id
+    if (!is.null(con) && write.to.db) {
+      # write ensemble first
+      ensemble.id <- PEcAn.DB::db.query(paste0(
+        "INSERT INTO ensembles (runtype, workflow_id) ",
+        "VALUES ('ensemble', ", format(workflow.id, scientific = FALSE), ")",
+        "RETURNING id"), con = con)[['id']]
+      
+      for (pft in defaults) {
+        PEcAn.DB::db.query(paste0(
+          "INSERT INTO posteriors_ensembles (posterior_id, ensemble_id) ",
+          "values (", pft$posteriorid, ", ", ensemble.id, ")"), con = con)
+      }
+    } else {
+      ensemble.id <- NA
+    }
+    #-------------------------generating met/param/soil/veg/... for all ensumbles----
+    if (!is.null(con)){
+      #-- lets first find out what tags are required for this model
+      required_tags <- dplyr::tbl(con, 'models') %>%
+        dplyr::filter(id == !!as.numeric(settings$model$id)) %>%
+        dplyr::inner_join(dplyr::tbl(con, "modeltypes_formats"), by = c('modeltype_id')) %>%
+        dplyr::collect() %>%
+        dplyr::filter(required == TRUE) %>%
+        dplyr::pull(tag)
+      
+    }else{
+      required_tags<-c("met","parameters")
+      
+    }
+    
+    #now looking into the xml
+    samp <- settings$ensemble$samplingspace
+    #finding who has a parent
+    parents <- lapply(samp,'[[', 'parent')
+    #order parents based on the need of who has to be first
+    order <- names(samp)[lapply(parents, function(tr) which(names(samp) %in% tr)) %>% unlist()] 
+    #new ordered sampling space
+    samp.ordered <- samp[c(order, names(samp)[!(names(samp) %in% order)])]
+    #performing the sampling
+    samples<-list()
+    # For the tags specified in the xml I do the sampling
+    for(i in seq_along(samp.ordered)){
+      myparent<-samp.ordered[[i]]$parent # do I have a parent ?
+      #call the function responsible for generating the ensemble
+      samples[[names(samp.ordered[i])]] <- input.ens.gen(settings=settings,
+                                                         input=names(samp.ordered)[i],
+                                                         method=samp.ordered[[i]]$method,
+                                                         parent_ids=if( !is.null(myparent)) samples[[myparent]] # if I have parent then give me their ids - this is where the ordering matters making sure the parent is done before it's asked
+      )
+    }
+    
+    # if there is a tag required by the model but it is not specified in the xml then I replicate n times the first element 
+    required_tags%>%
+      purrr::walk(function(r_tag){
+        if (is.null(samples[[r_tag]]) & r_tag!="parameters") samples[[r_tag]]$samples <<- rep(settings$run$inputs[[tolower(r_tag)]]$path[1], settings$ensemble$size)
+      })
+    
+
+    # Let's find the PFT based on site location, if it was found I will subset the ensemble.samples otherwise we're not affecting anything    
+    if(!is.null(con)){
+      Pft_Site_df <- dplyr::tbl(con, "sites_cultivars")%>%
+        dplyr::filter(site_id == !!settings$run$site$id) %>%
+        dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), by = "cultivar_id") %>%
+        dplyr::inner_join(dplyr::tbl(con, "pfts"), by = c("pft_id" = "id")) %>%
+        dplyr::collect() 
+      
+      site_pfts_names <- Pft_Site_df$name %>% unlist() %>% as.character()
+      
+      PEcAn.logger::logger.info(paste("The most suitable pfts for your site are the followings:",site_pfts_names))
+      #-- if there is enough info to connect the site to pft
+      #if ( nrow(Pft_Site_df) > 0 & all(site_pfts_names %in% names(ensemble.samples)) ) ensemble.samples <- ensemble.samples [Pft_Site$name %>% unlist() %>% as.character()]
+    }
+
+    # Reading the site.pft specific tags from xml
+    site.pfts.vec <- settings$run$site$site.pft %>% unlist %>% as.character
+    
+    if (!is.null(site.pfts.vec)) {
+      # find the name of pfts defined in the body of pecan.xml
+      defined.pfts <-
+        settings$pfts %>% purrr::map('name') %>% unlist %>% as.character
+      # subset ensemble samples based on the pfts that are specified in the site and they are also sampled from.
+      if (length(which(site.pfts.vec %in% defined.pfts)) > 0)
+        ensemble.samples <-
+          ensemble.samples [site.pfts.vec[which(site.pfts.vec %in% defined.pfts)]]
+      # warn if there is a pft specified in the site but it's not defined in the pecan xml.
+      if (length(which(!(site.pfts.vec %in% defined.pfts))) > 0)
+        PEcAn.logger::logger.warn(
+          paste0(
+            "The following pfts are specified for the siteid ",
+            settings$run$site$id ,
+            " but they are not defined as a pft in pecan.xml:",
+            site.pfts.vec[which(!(site.pfts.vec %in% defined.pfts))],
+            collapse = ","
+          )
+        )
+    }
+    
+    # if no ensemble piece was in the xml I replicate n times the first element in params
+    if ( is.null(samp$parameters) )            samples$parameters$samples <- ensemble.samples %>% purrr::map(~.x[rep(1, settings$ensemble$size) , ])
+    # This where we handle the parameters - ensemble.samples is already generated in run.write.config and it's sent to this function as arg - 
+    if ( is.null(samples$parameters$samples) ) samples$parameters$samples <- ensemble.samples
+    #------------------------End of generating ensembles-----------------------------------
+    # find all inputs that have an id
+    inputs <- names(settings$run$inputs)
+    inputs <- inputs[grepl(".id$", inputs)]
+    
+    # write configuration for each run of the ensemble
+    runs <- data.frame()
+    for (i in seq_len(settings$ensemble$size)) {
+      if (!is.null(con) && write.to.db) {
+        paramlist <- paste("ensemble=", i, sep = "")
+        # inserting this into the table and getting an id back
+        run.id <- PEcAn.DB::db.query(paste0(
+          "INSERT INTO runs (model_id, site_id, start_time, finish_time, outdir, ensemble_id, parameter_list) ",
+          "values ('", 
+          settings$model$id, "', '", 
+          settings$run$site$id, "', '", 
+          settings$run$start.date, "', '", 
+          settings$run$end.date, "', '", 
+          settings$run$outdir, "', ", 
+          ensemble.id, ", '", 
+          paramlist, "') ",
+          "RETURNING id"), con = con)[['id']]
+        # associate inputs with runs
+        if (!is.null(inputs)) {
+          for (x in inputs) {
+            PEcAn.DB::db.query(paste0("INSERT INTO inputs_runs (input_id, run_id) ",
+                                      "values (", settings$run$inputs[[x]], ", ", run.id, ")"), 
+                               con = con)
+          }
+        }
+        
+      } else {
+
+        run.id <- PEcAn.utils::get.run.id("ENS", PEcAn.utils::left.pad.zeros(i, 5), site.id=settings$run$site$id)
+
+      }
+      runs[i, "id"] <- run.id
+      
+      # create folders (cleaning up old ones if needed)
+      if (clean) {
+        unlink(file.path(settings$rundir, run.id))
+        unlink(file.path(settings$modeloutdir, run.id))
+      }
+      dir.create(file.path(settings$rundir, run.id), recursive = TRUE)
+      dir.create(file.path(settings$modeloutdir, run.id), recursive = TRUE)
+      # write run information to disk
+      cat("runtype     : ensemble\n",
+          "workflow id : ", format(workflow.id, scientific = FALSE), "\n",
+          "ensemble id : ", format(ensemble.id, scientific = FALSE), "\n",
+          "run         : ", i, "/", settings$ensemble$size, "\n",
+          "run id      : ", format(run.id, scientific = FALSE), "\n",
+          "pft names   : ", as.character(lapply(settings$pfts, function(x) x[["name"]])), "\n",
+          "model       : ", model, "\n",
+          "model id    : ", format(settings$model$id, scientific = FALSE), "\n",
+          "site        : ", settings$run$site$name, "\n",
+          "site  id    : ", format(settings$run$site$id, scientific = FALSE), "\n",
+          "met data    : ", samples$met$samples[[i]], "\n",
+          "start date  : ", settings$run$start.date, "\n",
+          "end date    : ", settings$run$end.date, "\n",
+          "hostname    : ", settings$host$name, "\n",
+          "rundir      : ", file.path(settings$host$rundir, run.id), "\n",
+          "outdir      : ", file.path(settings$host$outdir, run.id), "\n",
+          file = file.path(settings$rundir, run.id, "README.txt"))
+      
+      #changing the structure of input tag to what the models are expecting
+      for(input_i in seq_along(settings$run$inputs)){
+        input_tag <- names(settings$run$inputs)[[input_i]]
+        if (!is.null(samples[[input_tag]]))
+          settings$run$inputs[[input_tag]][["path"]] <-
+            samples[[input_tag]][["samples"]][[i]]
+      }
+
+      
+      do.call(my.write.config, args = list( defaults = defaults, 
+                                            trait.values = lapply(samples$parameters$samples, function(x, n) { x[n, , drop=FALSE] }, n=i), # this is the params
+                                            settings = settings, 
+                                            run.id = run.id
+      )
+      )
+      cat(format(run.id, scientific = FALSE), file = file.path(settings$rundir, "runs.txt"), sep = "\n", append = TRUE)
+
+    }
+    return(invisible(list(runs = runs, ensemble.id = ensemble.id, samples=samples)))
+    #------------------------------------------------- if we already have everything ------------------        
+  }else{
+    #reading retstart inputs
+    inputs<-restart$inputs
+    run.id<-restart$runid
+    new.params<-restart$new.params
+    new.state<-restart$new.state
+    ensemble.id<-restart$ensemble.id
+    
+    # Reading the site.pft specific tags from xml
+    site.pfts.vec <- settings$run$site$site.pft %>% unlist %>% as.character
+    
+    if(!is.null(site.pfts.vec)){
+      # find the name of pfts defined in the body of pecan.xml
+      defined.pfts <- settings$pfts %>% purrr::map('name') %>% unlist %>% as.character
+      # subset ensemble samples based on the pfts that are specified in the site and they are also sampled from.
+      if (length(which(site.pfts.vec %in% defined.pfts)) > 0 )
+        new.params <- new.params %>% map(~list(.x[[which(site.pfts.vec %in% defined.pfts)]],restart=.x$restart))
+      # warn if there is a pft specified in the site but it's not defined in the pecan xml.
+      if (length(which(!(site.pfts.vec %in% defined.pfts)))>0) 
+        PEcAn.logger::logger.warn(paste0("The following pfts are specified for the siteid ", settings$run$site$id ," but they are not defined as a pft in pecan.xml:",
+                                         site.pfts.vec[which(!(site.pfts.vec %in% defined.pfts))]))
+    }
+    
+    
+    # stop and start time are required by bc we are wrtting them down into job.sh
+    for (i in seq_len(settings$ensemble$size)) {
+      do.call(my.write_restart, 
+              args =  list(outdir = settings$host$outdir, 
+                           runid = run.id[[i]], 
+                           start.time = restart$start.time,
+                           stop.time =restart$stop.time, 
+                           settings = settings,
+                           new.state = new.state[i, ], 
+                           new.params = new.params[[i]], 
+                           inputs =list(met=list(path=inputs$samples[[i]])), 
+                           RENAME = TRUE)
+      )
+    }
+    params<-new.params
+    return(invisible(list(runs = data.frame(id=run.id), ensemble.id = ensemble.id, samples=list(met=inputs)
+    )
+    ))
+  }
+  
+  
+  
+} # write.ensemble.configs
+```
+
+#### f3 input.ens.gen
+
+```{r eval = FALSE}
+#' Function for generating samples based on sampling method, parent or etc
+#'
+#' @param settings list of PEcAn settings
+#' @param method Method for sampling - For now looping or sampling with replacement is implemented
+#' @param parent_ids This is basically the order of the paths that the parent is sampled.See Details.
+#'
+#' @return For a given input/tag in the pecan xml and a method, this function returns a list with $id showing the order of sampling and $samples with samples of that input.
+#' @details If for example met was a parent and it's sampling method resulted in choosing the first, third and fourth samples, these are the ids that need to be sent as
+#' parent_ids to this function.
+#' @export
+#'
+#' @examples
+#' \dontrun{input.ens.gen(settings,"met","sampling")}
+#'
+input.ens.gen <- function(settings, input, method = "sampling", parent_ids = NULL) {
+
+  #-- reading the dots and exposing them to the inside of the function
+  samples <- list()
+  samples$ids <- c()
+  #
+  if (is.null(method)) return(NULL)
+  # parameter is exceptional it needs to be handled spearatly
+  if (input == "parameters") return(NULL)
+
+  #-- assing the sample ids based on different scenarios
+  input_path <- settings$run$inputs[[tolower(input)]]$path
+  if (!is.null(parent_ids)) {
+    samples$ids <- parent_ids$ids
+    out.of.sample.size <- length(samples$ids[samples$ids > length(input_path)])
+    #sample for those that our outside the param size - forexample, parent id may send id number 200 but we have only100 sample for param
+    samples$ids[samples$ids %in% out.of.sample.size] <- sample(
+      seq_along(input_path),
+      out.of.sample.size,
+      replace = TRUE)
+  } else if (tolower(method) == "sampling") {
+    samples$ids <- sample(
+      seq_along(input_path),
+      settings$ensemble$size,
+      replace = TRUE)
+  } else if (tolower(method) == "looping") {
+    samples$ids <- rep_len(
+      seq_along(input_path),
+      length.out = settings$ensemble$size)
+  }
+  #using the sample ids
+  samples$samples <- input_path[samples$ids]
+
+  return(samples)
+}
+
+```
+
+
+## sda_matchparam
