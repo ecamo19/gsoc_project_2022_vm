@@ -36,5 +36,5 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 ```
 
-![Alt text](./gsoc_logo.png "Optional title ")
+![Alt text](./gsoc_logo_2.png "Optional title ")
 
