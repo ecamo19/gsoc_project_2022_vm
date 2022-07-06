@@ -6,12 +6,16 @@ setwd('/home/carya')
 getwd()
 
 # Read settings file -----------------------------------------------------------
-settings <- PEcAn.settings::read.settings("./gsoc/xml_files/simple.xml")
+settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
 
 ## Configure settings ----------------------------------------------------------
-settings$outdir <- file.path('./pecan_runs/run_3/')
 
-settings$ensemble$size <- 1
+# Get date
+path <- paste0('./gsoc_project_2022/pecan_runs/run_', Sys.Date())
+
+settings$outdir <- file.path(path)
+
+settings$ensemble$size <- 100
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
 

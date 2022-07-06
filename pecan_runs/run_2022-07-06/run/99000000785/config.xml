@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config>
+ <run>
+  <start.date>2002-01-01 00:00:00</start.date>
+  <end.date>2005-12-31 00:00:00</end.date>
+  <met.path></met.path>
+  <soil.file></soil.file>
+ </run>
+ <location>
+  <latitude>40.0637</latitude>
+  <longitude>-88.202</longitude>
+ </location>
+ <simulationPeriod>
+  <dateofplanting>2002/01/01</dateofplanting>
+  <dateofharvest>2005/12/31</dateofharvest>
+ </simulationPeriod>
+ <pft>
+  <type>
+   <photosynthesis>C3</photosynthesis>
+   <genus>Populus</genus>
+   <name>populus</name>
+  </type>
+ </pft>
+</config>
