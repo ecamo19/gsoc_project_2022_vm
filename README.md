@@ -41,7 +41,7 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 ## Code reproducibility
 
-All code is being run on a virtual machine that can be installed following [this instructions](https://pecanproject.github.io/pecan-documentation/master/install-vm.html#install-vm)
+All code is develop by runing it on a virtual machine. This VM can be installed following [this instructions](https://pecanproject.github.io/pecan-documentation/master/install-vm.html#install-vm)
 
 ## Functions Inputs and Outputs 
 
