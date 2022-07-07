@@ -72,6 +72,7 @@ All code is being run on a virtual machine that can be installed following [this
       style input_get_ensemble_2 fill:#880808
       style input_get_ensemble_3 fill:#880808
       style input_get_ensemble_4 fill:#880808
+      style get.ensemble.samples fill:#880808
             
       
 ```
