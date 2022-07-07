@@ -38,11 +38,6 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 ```
 
-
-## Code reproducibility
-
-All code is develop by runing it on a virtual machine. This VM can be installed following [this instructions](https://pecanproject.github.io/pecan-documentation/master/install-vm.html#install-vm)
-
 ## Functions Inputs and Outputs 
 
 __red color = code not running or outputs not found__
@@ -95,6 +90,12 @@ __blue color = code runs or outputs are available__
       style output_write_ensemble_4 fill:#880808
       
 ```
+
+## Code reproducibility
+
+All code is develop by runing it on a virtual machine. This VM can be installed following [this instructions](https://pecanproject.github.io/pecan-documentation/master/install-vm.html#install-vm)
+
+
 
 
 
