@@ -46,7 +46,6 @@ All code is being run on a virtual machine that can be installed following [this
 ## Functions Inputs and Outputs 
 
 
-
 ```mermaid
   graph TD;
       simple.xml-->run.write.configs;
@@ -61,7 +60,8 @@ All code is being run on a virtual machine that can be installed following [this
       input_get_ensemble_4[param.names]-->get.ensemble.samples;
       get.ensemble.samples--> output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions];
       output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions]-->write.ensemble.configs;
-      C-->D;
+      model-->write.ensemble.configs;
+      simple.xml-->write.ensemble.configs;
       
      
       style basic_run.R fill:#00758f
@@ -70,6 +70,7 @@ All code is being run on a virtual machine that can be installed following [this
       style simple.xml fill:#00758f
       style posterior.files fill:#00758f
       
+      
   
       style input_get_ensemble_1 fill:#880808
       style input_get_ensemble_2 fill:#880808
@@ -77,6 +78,7 @@ All code is being run on a virtual machine that can be installed following [this
       style input_get_ensemble_4 fill:#880808
       style get.ensemble.samples fill:#880808
       style output_get_ensemble  fill:#880808 
+      style model fill:#880808 
       
 ```
 
