@@ -49,7 +49,7 @@ All code is being run on a virtual machine that can be installed following [this
 
 ```mermaid
   graph TD;
-      A[a,b]-->B;
+      inputs[xml_file,post.distns.Rdata or prior.distns.Rdata]-->B;
       A-->C;
       B-->D;
       C-->D;
