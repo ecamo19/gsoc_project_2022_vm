@@ -47,16 +47,17 @@ All code is being run on a virtual machine that can be installed following [this
 ## Functions hierarchy
 
 ```mermaid
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
+    graph TD;
+    inputs:-->run.write.configs; 
+    run.write.configs-->output:;
+    A-->C;
+    B-->D;
+    C-->D;
 ```
 
 
 ```sequence {theme="hand"}
-    run.write.configs-->get.ensemble.samples
+    -->get.ensemble.samples
     inputs-->run.write.configs
     get.ensemble.samples-->write.ensemble.configs
     write.ensemble.configs-->input.ens.gen
