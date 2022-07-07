@@ -48,7 +48,7 @@ All code is being run on a virtual machine that can be installed following [this
 
 ```mermaid
     sequenceDiagram
-    inputs:xml file,posterior files<br />-->run.write.configs; 
+    inputs:xml file,posterior files-->run.write.configs; 
     run.write.configs-->output:updated_settings,ensemble_IDs_for_SA_and_ensemble_analysis;
     A-->C;
     B-->D;
