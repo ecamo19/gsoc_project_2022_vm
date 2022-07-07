@@ -25,7 +25,7 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 │   ├── sub_function_read_ensemble_output_original.R
 │   └── sub_function_write_ensemble_configs_original.R
 ├── scripts
-│   ├── basic_run.R    # Gernerates post.distns.Rdata and prior.distns.Rdata needed in the run.write.configs function
+│   ├── basic_run.R                     # Gernerates post.distns.Rdata and prior.distns.Rdata needed in the run.write.configs function
 │   ├── run_1.R
 │   ├── run_1_tunnel.R
 │   ├── run_2.R
@@ -33,7 +33,7 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 └── xml_files
     ├── pecan.CONFIGS_original.xml
     ├── pecan_run_2.xml
-    └── simple.xml # xml file used in the basic_run.R
+    └── simple.xml                      # xml file used in the basic_run.R
 
 4 directories, 17 files
 
