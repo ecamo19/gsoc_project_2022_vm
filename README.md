@@ -11,7 +11,6 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 ## Repo structure
 
 ```bash
-
 .
 ├── notebooks
 │   ├── gsoc_first_week_of_work.html
@@ -38,6 +37,9 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 4 directories, 17 files
 
 ```
+
+
+
 ## Code reproducibility
 
 All code is being run on a virtual machine that can be installed following [this instructions](https://pecanproject.github.io/pecan-documentation/master/install-vm.html#install-vm)
