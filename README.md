@@ -49,7 +49,7 @@ All code is being run on a virtual machine that can be installed following [this
 ```mermaid
     graph TD;
     inputs: xml file,posterior.files-->run.write.configs; 
-    run.write.configs-->output:updated settings,includes ensemble IDs for SA and ensemble analysis;
+   
     A-->C;
     B-->D;
     C-->D;
