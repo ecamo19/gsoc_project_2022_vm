@@ -39,7 +39,6 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 ```
 
 
-
 ## Code reproducibility
 
 All code is being run on a virtual machine that can be installed following [this instructions](https://pecanproject.github.io/pecan-documentation/master/install-vm.html#install-vm)
@@ -49,7 +48,7 @@ All code is being run on a virtual machine that can be installed following [this
 
 ```mermaid
   graph TD;
-      inputs[xml_file\ \post.distns.Rdata or prior.distns.Rdata]-->B;
+      inputs[xml_file post.distns.Rdata or prior.distns.Rdata]-->B;
       A-->C;
       B-->D;
       C-->D;
