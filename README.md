@@ -66,6 +66,7 @@ All code is being run on a virtual machine that can be installed following [this
       style basic_run.R fill:#00758f
       style simple.xml fill:#00758f
       style posterior.files fill:#00758f
+      style input_get_ensemble_1 fill:#880808
             
       
 ```
