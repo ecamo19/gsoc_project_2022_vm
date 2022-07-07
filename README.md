@@ -48,10 +48,11 @@ All code is being run on a virtual machine that can be installed following [this
 
 ```mermaid
 graph TD;
-    `run.write.configs`-->`get.ensemble.samples`;
-    `get.ensemble.samples`-->`write.ensemble.configs`;
-    `write.ensemble.configs`-->`input.ens.gen` ;
-    `input.ens.gen` -->`read.ensemble.output`;
+    run.write.configs-->get.ensemble.samples;
+    run.write.configs--> inputs :
+    get.ensemble.samples-->write.ensemble.configs;
+    write.ensemble.configs-->input.ens.gen;
+    input.ens.gen-->read.ensemble.output;
 ```
 
 
