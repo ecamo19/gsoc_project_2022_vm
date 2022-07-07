@@ -44,4 +44,6 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 All code is being run on a virtual machine that can be installed following [this instructions](https://pecanproject.github.io/pecan-documentation/master/install-vm.html#install-vm)
 
+## Functions hierarchy
 
+1) `run.write.configs` &rarr; 2) `get.ensemble.samples` &rarr; 3) `write.ensemble.configs` &rarr; 4) `input.ens.gen` &rarr; 5) `read.ensemble.output`
