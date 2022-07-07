@@ -46,4 +46,4 @@ All code is being run on a virtual machine that can be installed following [this
 
 ## Functions hierarchy
 
-1 ) `run.write.configs` &rarr; 2 ) `get.ensemble.samples` &rarr; 3 ) `write.ensemble.configs` &rarr; 4 ) `input.ens.gen` &rarr; 5 ) `read.ensemble.output`
+`run.write.configs` &rarr; 2) `get.ensemble.samples` &rarr; 3) `write.ensemble.configs` &rarr; 4) `input.ens.gen` &rarr; 5) `read.ensemble.output`
