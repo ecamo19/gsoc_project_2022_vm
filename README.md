@@ -46,7 +46,7 @@ All code is being run on a virtual machine that can be installed following [this
 
 ## Functions hierarchy
 
-```sequence {theme="hand" }
+```sequence {theme="hand"}
     run.write.configs-->get.ensemble.samples
     inputs-->run.write.configs
     get.ensemble.samples-->write.ensemble.configs
