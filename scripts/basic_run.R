@@ -32,8 +32,6 @@ settings$ensemble$samplingspace$parameters$method <- 'lhc'
 # PEcAn Workflow ---------------------------------------------------------------
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
 
-PEcAn.DB::db.open(settings$database$bety)
-
 ## Write pecan.CHECKED.xml -----------------------------------------------------
 PEcAn.settings::write.settings(settings, outputfile = "pecan.CHECKED.xml")
 
@@ -55,7 +53,6 @@ if (PEcAn.utils::status.check("TRAIT") == 0) {
 
 
 ## Run the PEcAn meta.analysis -------------------------------------------------
-
 if (!is.null(settings$meta.analysis)) {
     if (PEcAn.utils::status.check("META") == 0) {
         PEcAn.utils::status.start("META")
@@ -63,6 +60,7 @@ if (!is.null(settings$meta.analysis)) {
         PEcAn.utils::status.end()
     }
 }
+
 
 ## Write model specific configs ------------------------------------------------
 
