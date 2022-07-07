@@ -49,7 +49,7 @@ All code is being run on a virtual machine that can be installed following [this
 
 ```mermaid
   graph TD;
-      settings[xml_file]-->run.write.configs;
+      settings[simple.xml]-->run.write.configs;
       simple.xml-->basic_run.R;
       basic_run.R-->posterior.files[post.distns.Rdata or prior.distns.Rdata];
       posterior.files[post.distns.Rdata or prior.distns.Rdata]-->run.write.configs;
