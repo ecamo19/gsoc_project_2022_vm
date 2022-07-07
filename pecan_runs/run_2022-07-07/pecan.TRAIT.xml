@@ -16,7 +16,7 @@
   <pft>
    <name>populus</name>
    <outdir>./gsoc_project_2022/pecan_runs/run_2022-07-07/pft/populus</outdir>
-   <posteriorid>99000000058</posteriorid>
+   <posteriorid>99000000059</posteriorid>
   </pft>
  </pfts>
  <meta.analysis>
@@ -67,7 +67,7 @@
   <checked>TRUE</checked>
  </settings.info>
  <workflow>
-  <id>99000000065</id>
+  <id>99000000067</id>
  </workflow>
  <rundir>/home/carya/./gsoc_project_2022/pecan_runs/run_2022-07-07/run</rundir>
  <modeloutdir>/home/carya/./gsoc_project_2022/pecan_runs/run_2022-07-07/out</modeloutdir>
