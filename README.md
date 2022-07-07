@@ -51,6 +51,7 @@ All code is being run on a virtual machine that can be installed following [this
       settings[xml_file]-->run.write.configs ;
       posterior.files[post.distns.Rdata or prior.distns.Rdata]-->run.write.configs;
       run.write.configs-->output_1[updated settings with ensemble IDs for SA and ensemble analysis ];
+      output_1[updated settings with ensemble IDs for SA and ensemble analysis]-->get.ensemble.samples;
       A-->C;
       B-->D;
       C-->D;
