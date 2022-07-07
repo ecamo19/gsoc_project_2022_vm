@@ -57,7 +57,7 @@ All code is being run on a virtual machine that can be installed following [this
       input_get_ensemble_2[env.samples]-->get.ensemble.samples;
       input_get_ensemble_3[ensemble.size]-->get.ensemble.samples;
       input_get_ensemble_4[param.names]-->get.ensemble.samples;
-      A-->C;
+      get.ensemble.samples--> matrix of (quasi-)random samples from trait distributions;
       B-->D;
       C-->D;
 ```
