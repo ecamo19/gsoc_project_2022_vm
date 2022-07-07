@@ -54,6 +54,7 @@ All code is being run on a virtual machine that can be installed following [this
       output_1[updated settings with ensemble IDs for SA and ensemble analysis]-->get.ensemble.samples;
       input_get_ensemble_1[pft.samples]-->get.ensemble.samples;
       input_get_ensemble_2[env.samples]-->get.ensemble.samples;
+      input_get_ensemble_3[ensemble.size]-->get.ensemble.samples;
       A-->C;
       B-->D;
       C-->D;
