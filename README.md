@@ -47,7 +47,7 @@ All code is being run on a virtual machine that can be installed following [this
 
 __red color = code not running or outputs not found__
 
-__blue color = code runs or outputs is available__
+__blue color = code runs or outputs are available__
 
 ```mermaid
   graph TD;
