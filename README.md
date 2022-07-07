@@ -53,6 +53,7 @@ __blue color = code runs or outputs is available__
   graph TD;
       simple.xml-->run.write.configs;
       simple.xml-->basic_run.R;
+      simple.xml-->model;
       basic_run.R-->posterior.files[post.distns.Rdata or prior.distns.Rdata];
       posterior.files[post.distns.Rdata or prior.distns.Rdata]-->run.write.configs;
       run.write.configs-->output_1[updated settings with ensemble IDs for SA and ensemble analysis ];
