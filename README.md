@@ -45,6 +45,7 @@ All code is being run on a virtual machine that can be installed following [this
 
 ## Functions Inputs and Outputs 
 
+red color = code not running or outputs not found
 
 ```mermaid
   graph TD;
