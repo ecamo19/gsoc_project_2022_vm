@@ -47,11 +47,11 @@ All code is being run on a virtual machine that can be installed following [this
 ## Functions hierarchy
 
 ```sequence {theme="hand" }
-    run.write.configs-->get.ensemble.samples;
-    inputs-->run.write.configs ;
-    get.ensemble.samples-->write.ensemble.configs;
-    write.ensemble.configs-->input.ens.gen;
-    input.ens.gen-->read.ensemble.output;
+    run.write.configs-->get.ensemble.samples
+    inputs-->run.write.configs
+    get.ensemble.samples-->write.ensemble.configs
+    write.ensemble.configs-->input.ens.gen
+    input.ens.gen-->read.ensemble.output
 ```
 
 
