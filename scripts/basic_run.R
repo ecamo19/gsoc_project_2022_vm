@@ -1,3 +1,8 @@
+# Script objective -------------------------------------------------------------
+
+# The main objective of this script  is to generate the post.distns.Rdata and 
+# prior.distns.Rdata needed in the run.write.configs function 
+
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
 
