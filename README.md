@@ -48,8 +48,8 @@ All code is being run on a virtual machine that can be installed following [this
 
 ```mermaid
   graph TD;
-      inputs[xml_file]-->B;
-      inputs[post.distns.Rdata or prior.distns.Rdata]-->B;
+      settings[xml_file]-->B;
+      posterior.files[post.distns.Rdata or prior.distns.Rdata]-->B;
       A-->C;
       B-->D;
       C-->D;
