@@ -63,17 +63,20 @@ All code is being run on a virtual machine that can be installed following [this
       output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions]-->write.ensemble.configs;
       C-->D;
       
+      # Available 
       style basic_run.R fill:#00758f
       style output_1 fill:#00758f
       style run.write.configs fill:#00758f
       style simple.xml fill:#00758f
       style posterior.files fill:#00758f
+      
+      # No available
       style input_get_ensemble_1 fill:#880808
       style input_get_ensemble_2 fill:#880808
       style input_get_ensemble_3 fill:#880808
       style input_get_ensemble_4 fill:#880808
       style get.ensemble.samples fill:#880808
-            
+      style output_get_ensemble  fill:#880808 
       
 ```
 
