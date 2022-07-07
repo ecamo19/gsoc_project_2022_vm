@@ -31,8 +31,8 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 │   ├── run_2.R
 │   └── run_2_work.R
 └── xml_files
-    ├── pecan.CONFIGS_original.xml
-    ├── pecan_run_2.xml
+    ├── pecan.CONFIGS_original.xml      # Reference file
+    ├── pecan_run_2.xml                 # xml file used in run_2_work.R
     └── simple.xml                      # xml file used in the basic_run.R
 
 4 directories, 17 files
