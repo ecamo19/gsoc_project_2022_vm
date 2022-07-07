@@ -33,7 +33,7 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 └── xml_files
     ├── pecan.CONFIGS_original.xml
     ├── pecan_run_2.xml
-    └── simple.xml
+    └── simple.xml echo 'hola'
 
 4 directories, 17 files
 
