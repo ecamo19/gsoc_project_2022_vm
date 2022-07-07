@@ -48,24 +48,24 @@ All code is being run on a virtual machine that can be installed following [this
 
 ```mermaid
   graph TD;
-      simple.xml-->run.write.configs();
+      simple.xml-->run.write.configs;
       simple.xml-->basic_run.R;
       basic_run.R-->posterior.files[post.distns.Rdata or prior.distns.Rdata];
-      posterior.files[post.distns.Rdata or prior.distns.Rdata]-->run.write.configs();
-      run.write.configs()-->output_1[updated settings with ensemble IDs for SA and ensemble analysis ];
-      output_1[updated settings with ensemble IDs for SA and ensemble analysis]-->get.ensemble.samples();
-      input_get_ensemble_1[pft.samples]-->get.ensemble.samples();
-      input_get_ensemble_2[env.samples]-->get.ensemble.samples();
-      input_get_ensemble_3[ensemble.size]-->get.ensemble.samples();
-      input_get_ensemble_4[param.names]-->get.ensemble.samples();
-      get.ensemble.samples()--> output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions];
-      output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions]-->write.ensemble.configs();
-      model-->write.ensemble.configs();
+      posterior.files[post.distns.Rdata or prior.distns.Rdata]-->run.write.configs;
+      run.write.configs-->output_1[updated settings with ensemble IDs for SA and ensemble analysis ];
+      output_1[updated settings with ensemble IDs for SA and ensemble analysis]-->get.ensemble.samples;
+      input_get_ensemble_1[pft.samples]-->get.ensemble.samples;
+      input_get_ensemble_2[env.samples]-->get.ensemble.samples;
+      input_get_ensemble_3[ensemble.size]-->get.ensemble.samples;
+      input_get_ensemble_4[param.names]-->get.ensemble.samples;
+      get.ensemble.samples--> output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions];
+      output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions]-->write.ensemble.configs;
+      model-->write.ensemble.configs;
       simple.xml-->write.ensemble.configs;
-      write.ensemble.configs()-->output_write_ensemble_1[$runs = data frame of runids];
-      write.ensemble.configs()-->output_write_ensemble_2[$ensemble.id = the ensemble ID for these runs];
-      write.ensemble.configs()-->output_write_ensemble_3[$samples with ids and samples used for each tag.];
-      write.ensemble.configs()-->output_write_ensemble_4[sensitivity analysis configuration files as a side effect];
+      write.ensemble.configs-->output_write_ensemble_1[$runs = data frame of runids];
+      write.ensemble.configs-->output_write_ensemble_2[$ensemble.id = the ensemble ID for these runs];
+      write.ensemble.configs-->output_write_ensemble_3[$samples with ids and samples used for each tag.];
+      write.ensemble.configs-->output_write_ensemble_4[sensitivity analysis configuration files as a side effect];
       
       
      
