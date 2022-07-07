@@ -46,4 +46,13 @@ All code is being run on a virtual machine that can be installed following [this
 
 ## Functions hierarchy
 
-`run.write.configs` &rarr; 2) `get.ensemble.samples` &rarr; 3) `write.ensemble.configs` &rarr; 4) `input.ens.gen` &rarr; 5) `read.ensemble.output`
+```mermaid
+graph TD;
+    `run.write.configs`-->`get.ensemble.samples`;
+    `get.ensemble.samples`-->`write.ensemble.configs`;
+    `write.ensemble.configs`-->`input.ens.gen` ;
+    `input.ens.gen` -->`read.ensemble.output`;
+```
+
+
+
