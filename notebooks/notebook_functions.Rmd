@@ -1,5 +1,5 @@
 ---
-title: 'Functions documentation'
+title: 'Functions input and outputs'
 author: "Erick Calderon-Morales"
 date: ' Fall 2021'
 due_date: ""
@@ -65,12 +65,6 @@ library(PEcAn.all)
 devtools::session_info()$packages
 ```
 
-
-# Load xml file
-
-```{r}
-settings <- PEcAn.settings::read.settings("./xml_files/pecan.CONFIGS_2.xml") 
-```
 
 
 # Functions  
