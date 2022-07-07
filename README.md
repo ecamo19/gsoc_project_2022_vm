@@ -46,6 +46,7 @@ All code is being run on a virtual machine that can be installed following [this
 ## Functions hierarchy
 
 
+
 ```mermaid
   graph TD;
       settings[xml_file]-->run.write.configs ;
@@ -55,6 +56,7 @@ All code is being run on a virtual machine that can be installed following [this
       input_get_ensemble_1[pft.samples]-->get.ensemble.samples;
       input_get_ensemble_2[env.samples]-->get.ensemble.samples;
       input_get_ensemble_3[ensemble.size]-->get.ensemble.samples;
+      input_get_ensemble_4[param.names]-->get.ensemble.samples;
       A-->C;
       B-->D;
       C-->D;
