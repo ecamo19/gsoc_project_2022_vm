@@ -43,7 +43,7 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 All code is being run on a virtual machine that can be installed following [this instructions](https://pecanproject.github.io/pecan-documentation/master/install-vm.html#install-vm)
 
-## Functions hierarchy
+## Functions Inputs and Outputs 
 
 
 
