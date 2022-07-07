@@ -65,7 +65,7 @@ All code is being run on a virtual machine that can be installed following [this
       
       style basic_run.R fill:#00758f
       style simple.xml fill:#00758f
-      style posterior.files[post.distns.Rdata or prior.distns.Rdata] fill:#00758f
+      style posterior.files fill:#00758f
             
       
 ```
