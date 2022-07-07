@@ -10,7 +10,7 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 ## Repo structure
 
-
+```bash
 
 .
 ├── notebooks
@@ -25,7 +25,7 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 │   ├── sub_function_read_ensemble_output_original.R
 │   └── sub_function_write_ensemble_configs_original.R
 ├── scripts
-│   ├── basic_run.R  &rarr; Gernerates post.distns.Rdata and prior.distns.Rdata for run.write.configs function
+│   ├── basic_run.R  > Gernerates post.distns.Rdata and prior.distns.Rdata for run.write.configs function
 │   ├── run_1.R
 │   ├── run_1_tunnel.R
 │   ├── run_2.R
@@ -37,6 +37,6 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 4 directories, 17 files
 
-
+```
 
 
