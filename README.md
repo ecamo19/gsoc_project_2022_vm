@@ -40,9 +40,9 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 
 ## Functions Inputs and Outputs 
 
-__red color = code not running or outputs not found__
+__red color = code not running and/or outputs not found__
 
-__blue color = code runs or outputs are available__
+__blue color = code runs and/or outputs are available__
 
 ```mermaid
   graph TD;
