@@ -62,6 +62,9 @@ All code is being run on a virtual machine that can be installed following [this
       output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions]-->write.ensemble.configs;
       model-->write.ensemble.configs;
       simple.xml-->write.ensemble.configs;
+      write.ensemble.configs-->output_write_ensemble[list, containing $runs = data frame of runids, $ensemble.id = the ensemble ID for these runs and $samples with ids and samples used for each tag.];
+      write.ensemble.configs-->output_write_ensemble_sa[writes sensitivity analysis configuration files as a side effect];
+      
       
      
       style basic_run.R fill:#00758f
