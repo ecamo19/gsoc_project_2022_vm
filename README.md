@@ -47,6 +47,20 @@ All code is being run on a virtual machine that can be installed following [this
 ## Functions hierarchy
 
 ```mermaid
+sequenceDiagram
+    participant dotcom
+    participant iframe
+    participant viewscreen
+    dotcom->>iframe: loads html w/ iframe url
+    iframe->>viewscreen: request template
+    viewscreen->>iframe: html & javascript
+    iframe->>dotcom: iframe ready
+    dotcom->>iframe: set mermaid data on iframe
+    iframe->>iframe: render mermaid
+```
+
+
+```mermaid
     sequenceDiagram
     inputs:xml file,posterior files-->run.write.configs; 
     run.write.configs-->output:updated_settings,ensemble_IDs_for_SA_and_ensemble_analysis;
