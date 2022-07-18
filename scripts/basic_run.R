@@ -11,7 +11,9 @@ setwd('/home/carya')
 getwd()
 
 # Read settings file -----------------------------------------------------------
-settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
+#settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
+settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
+
 
 ## Configure settings ----------------------------------------------------------
 
