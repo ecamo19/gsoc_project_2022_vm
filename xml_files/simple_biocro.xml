@@ -1,6 +1,5 @@
 <pecan>
-  <outdir>biocro_results</outdir>
-
+  
   <database>
     <bety>
       <driver>PostgreSQL</driver>
@@ -10,7 +9,7 @@
       <dbname>bety</dbname>
       <write>FALSE</write>
     </bety>
-    <dbfiles>biocro_results/dbfiles</dbfiles>
+    <dbfiles>/biocro_results/dbfiles</dbfiles>
   </database>
 
   <pfts>
@@ -40,7 +39,7 @@
 
   <model>
     <type>BIOCRO</type>
-    <binary>"/home/carya/gsoc_project_2022/models/biocro.Rscript"</binary>
+    <binary>/home/carya/gsoc_project_2022/models/biocro.Rscript</binary>
     <revision>1.0</revision>
   </model>
 
