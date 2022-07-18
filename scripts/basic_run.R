@@ -69,42 +69,9 @@ if (PEcAn.utils::status.check("OUTPUT") == 0) {
 
 ## Run ensemble analysis on model output ---------------------------------------
 
-if ("ensemble" %in% names(settings)
-    && PEcAn.utils::status.check("ENSEMBLE") == 0) {
-    PEcAn.utils::status.start("ENSEMBLE")
-    runModule.run.ensemble.analysis(settings, TRUE)
-    PEcAn.utils::status.end()
-}
 
-## Run sensitivity analysis and variance decomposition on model output ---------
 
-if ("sensitivity.analysis" %in% names(settings)
-    && PEcAn.utils::status.check("SENSITIVITY") == 0) {
-    PEcAn.utils::status.start("SENSITIVITY")
-    runModule.run.sensitivity.analysis(settings)
-    PEcAn.utils::status.end()
-}
 
-## Run parameter data assimilation ---------------------------------------------
-
-if ("assim.batch" %in% names(settings)) {
-    if (PEcAn.utils::status.check("PDA") == 0) {
-        PEcAn.utils::status.start("PDA")
-        settings <-
-            PEcAn.assim.batch::runModule.assim.batch(settings)
-        PEcAn.utils::status.end()
-    }
-}
-
-## Run state data assimilation -------------------------------------------------
-
-if ("state.data.assimilation" %in% names(settings)) {
-    if (PEcAn.utils::status.check("SDA") == 0) {
-        PEcAn.utils::status.start("SDA")
-        settings <- sda.enfk(settings)
-        PEcAn.utils::status.end()
-    }
-}
 
 ## Run benchmarking ------------------------------------------------------------
 if ("benchmarking" %in% names(settings)
@@ -143,12 +110,5 @@ if (PEcAn.utils::status.check("FINISHED") == 0) {
     }
     PEcAn.utils::status.end()
 }
-
-# End --------------------------------------------------------------------------
-
-
-
-
-
 
 
