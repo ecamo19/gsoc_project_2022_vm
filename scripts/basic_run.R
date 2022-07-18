@@ -3,6 +3,8 @@
 # The main objective of this script  is to generate the post.distns.Rdata and 
 # prior.distns.Rdata needed in the run.write.configs function 
 
+rm(list = ls())
+
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
 
@@ -22,9 +24,6 @@ path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
 
 settings$outdir <- file.path(path)
 settings$outdir
-
-settings$database$bety$write
-settings$database$bety$write <- FALSE
 
 settings$ensemble$size <- 100
 
@@ -55,7 +54,7 @@ runModule.run.meta.analysis(settings)
 runModule.run.write.configs(settings)
 
 ## Start ecosystem model runs --------------------------------------------------
-debugonce(runModule.start.model.runs)
+#debugonce(runModule.start.model.runs)
 PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
 settings$database$bety$write
 
