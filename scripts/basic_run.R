@@ -20,6 +20,10 @@ path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
 
 settings$outdir <- file.path(path)
 settings$outdir
+
+settings$database$bety$write
+settings$database$bety$write <- FALSE
+
 settings$ensemble$size <- 100
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
@@ -45,31 +49,13 @@ settings <- runModule.get.trait.data(settings)
 ## Run the PEcAn meta.analysis -------------------------------------------------
 runModule.run.meta.analysis(settings)
 
-
 ## Write model specific configs ------------------------------------------------
 runModule.run.write.configs(settings)
 
 ## Start ecosystem model runs --------------------------------------------------
+debugonce(runModule.start.model.runs)
 PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
-
-
-if (PEcAn.utils::status.check("MODEL") == 0) {
-    PEcAn.utils::status.start("MODEL")
-    stop_on_error <- as.logical(settings[[c("run", "stop_on_error")]])
-    if (length(stop_on_error) == 0) {
-        # If we're doing an ensemble run, don't stop. If only a single run, we
-        # should be stopping.
-        if (is.null(settings[["ensemble"]]) ||
-            as.numeric(settings[[c("ensemble", "size")]]) == 1) {
-            stop_on_error <- TRUE
-        } else {
-            stop_on_error <- FALSE
-        }
-    }
-    PEcAn.remote::runModule.start.model.runs(settings, 
-                                             stop.on.error = stop_on_error)
-    PEcAn.utils::status.end()
-}
+settings$database$bety$write
 
 # Get results of model runs ----------------------------------------------------
 
