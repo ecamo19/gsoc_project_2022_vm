@@ -16,9 +16,13 @@ settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.
 ## Configure settings ----------------------------------------------------------
 
 # Get date
-path <- paste0('./gsoc_project_2022/pecan_runs/run_', Sys.Date())
+path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
 
 settings$outdir <- file.path(path)
+settings$outdir
+
+settings$database$bety$write
+settings$database$bety$write <- FALSE
 
 settings$ensemble$size <- 100
 
@@ -32,6 +36,7 @@ settings$ensemble$samplingspace$parameters$method <- 'lhc'
 # PEcAn Workflow ---------------------------------------------------------------
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
 
+
 ## Write pecan.CHECKED.xml -----------------------------------------------------
 PEcAn.settings::write.settings(settings, outputfile = "pecan.CHECKED.xml")
 
@@ -39,64 +44,68 @@ PEcAn.settings::write.settings(settings, outputfile = "pecan.CHECKED.xml")
 settings <- PEcAn.workflow::do_conversions(settings)
 
 ##  Query the trait database for data and priors -------------------------------
-if (PEcAn.utils::status.check("TRAIT") == 0) {
-    PEcAn.utils::status.start("TRAIT")
-    settings <- PEcAn.workflow::runModule.get.trait.data(settings)
-    PEcAn.settings::write.settings(settings,
-                                   outputfile = "pecan.TRAIT.xml"
-    )
-    PEcAn.utils::status.end()
-} else if (file.exists(file.path(settings$outdir, "pecan.TRAIT.xml"))) {
-    settings <- 
-        PEcAn.settings::read.settings(file.path(settings$outdir, "pecan.TRAIT.xml"))
-}
-
+settings <- runModule.get.trait.data(settings)
 
 ## Run the PEcAn meta.analysis -------------------------------------------------
-if (!is.null(settings$meta.analysis)) {
-    if (PEcAn.utils::status.check("META") == 0) {
-        PEcAn.utils::status.start("META")
-        PEcAn.MA::runModule.run.meta.analysis(settings)
-        PEcAn.utils::status.end()
-    }
-}
-
+runModule.run.meta.analysis(settings)
 
 ## Write model specific configs ------------------------------------------------
-
-if (PEcAn.utils::status.check("CONFIG") == 0) {
-    PEcAn.utils::status.start("CONFIG")
-    settings <-
-        PEcAn.workflow::runModule.run.write.configs(settings)
-    PEcAn.settings::write.settings(settings, outputfile = "pecan.CONFIGS.xml")
-    PEcAn.utils::status.end()
-} else if (file.exists(file.path(settings$outdir, "pecan.CONFIGS.xml"))) {
-    settings <- 
-        PEcAn.settings::read.settings(file.path(settings$outdir, "pecan.CONFIGS.xml"))
-}
-
-if ((length(which(commandArgs() == "--advanced")) != 0)
-    && (PEcAn.utils::status.check("ADVANCED") == 0)) {
-    PEcAn.utils::status.start("ADVANCED")
-    q()
-}
+runModule.run.write.configs(settings)
 
 ## Start ecosystem model runs --------------------------------------------------
-if (PEcAn.utils::status.check("MODEL") == 0) {
-    PEcAn.utils::status.start("MODEL")
-    stop_on_error <- as.logical(settings[[c("run", "stop_on_error")]])
-    if (length(stop_on_error) == 0) {
-        # If we're doing an ensemble run, don't stop. If only a single run, we
-        # should be stopping.
-        if (is.null(settings[["ensemble"]]) ||
-            as.numeric(settings[[c("ensemble", "size")]]) == 1) {
-            stop_on_error <- TRUE
-        } else {
-            stop_on_error <- FALSE
-        }
+debugonce(runModule.start.model.runs)
+PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
+settings$database$bety$write
+
+# Get results of model runs ----------------------------------------------------
+
+if (PEcAn.utils::status.check("OUTPUT") == 0) {
+    PEcAn.utils::status.start("OUTPUT")
+    runModule.get.results(settings)
+    PEcAn.utils::status.end()
+}
+
+## Run ensemble analysis on model output ---------------------------------------
+
+
+
+
+
+## Run benchmarking ------------------------------------------------------------
+if ("benchmarking" %in% names(settings)
+    && "benchmark" %in% names(settings$benchmarking)) {
+    PEcAn.utils::status.start("BENCHMARKING")
+    results <-
+        papply(settings, function(x) {
+            calc_benchmark(x, bety)
+        })
+    PEcAn.utils::status.end()
+}
+
+## Pecan workflow complete -----------------------------------------------------
+if (PEcAn.utils::status.check("FINISHED") == 0) {
+    PEcAn.utils::status.start("FINISHED")
+    PEcAn.remote::kill.tunnel(settings)
+    db.query(
+        paste(
+            "UPDATE workflows SET finished_at=NOW() WHERE id=",
+            settings$workflow$id,
+            "AND finished_at IS NULL"
+        ),
+        params = settings$database$bety
+    )
+    
+    # Send email if configured
+    if (!is.null(settings$email)
+        && !is.null(settings$email$to)
+        && (settings$email$to != "")) {
+        sendmail(
+            settings$email$from,
+            settings$email$to,
+            paste0("Workflow has finished executing at ", base::date()),
+            paste0("You can find the results on ", settings$email$url)
+        )
     }
-    PEcAn.remote::runModule.start.model.runs(settings, 
-                                             stop.on.error = stop_on_error)
     PEcAn.utils::status.end()
 }
 

@@ -96,6 +96,7 @@ if ((length(which(commandArgs() == "--advanced")) != 0)
 }
 
 ## Start ecosystem model runs --------------------------------------------------
+
 if (PEcAn.utils::status.check("MODEL") == 0) {
     PEcAn.utils::status.start("MODEL")
     stop_on_error <- as.logical(settings[[c("run", "stop_on_error")]])
