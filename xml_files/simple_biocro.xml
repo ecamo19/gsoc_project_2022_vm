@@ -9,7 +9,6 @@
       <dbname>bety</dbname>
       <write>FALSE</write>
     </bety>
-    <dbfiles>/biocro_results/dbfiles</dbfiles>
   </database>
 
   <pfts>
@@ -19,6 +18,7 @@
   </pfts>
 
   <ensemble>
+    <size>200</size>
     <variable>AbvGrndWood</variable>
   </ensemble>
 
@@ -39,8 +39,8 @@
 
   <model>
     <type>BIOCRO</type>
-  <binary>/gsoc_project_2022/models/biocro.Rscript</binary>
-    <revision>1.0</revision>
+  <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
+    <revision>0.95</revision>
   </model>
 
   <run>
@@ -50,7 +50,7 @@
     <inputs>
       <met>
         <output>BIOCRO</output>
-        <path>/gsoc_project_2022/data/US-Bo1</path>
+        <path>~/gsoc_project_2022/data/US-Bo1</path>
       </met>
     </inputs>
       <start.date>2004/01/01</start.date>
