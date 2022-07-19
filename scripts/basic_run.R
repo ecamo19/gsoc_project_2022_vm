@@ -13,8 +13,8 @@ setwd('/home/carya')
 getwd()
 
 # Read settings file -----------------------------------------------------------
-#settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
-settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
+settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
+#settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
 
 
 ## Configure settings ----------------------------------------------------------
@@ -22,19 +22,21 @@ settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_
 # Get date
 path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
 
+# Set output dir
 settings$outdir <- file.path(path)
-settings$outdir
 
+# Modify settings
 settings$ensemble$size <- 100
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
 
 settings$pfts$pft$outdir <- file.path(settings$outdir, 'pft', 
-                                      settings$pfts$pft$name)
+                                            settings$pfts$pft$name)
 
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
 
 # PEcAn Workflow ---------------------------------------------------------------
+
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
 
 
@@ -55,10 +57,9 @@ runModule.run.write.configs(settings)
 
 ## Start ecosystem model runs --------------------------------------------------
 #debugonce(runModule.start.model.runs)
-PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
-settings$database$bety$write
+PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = FALSE)
 
-# Get results of model runs ----------------------------------------------------
+### Get results of model runs --------------------------------------------------
 
 if (PEcAn.utils::status.check("OUTPUT") == 0) {
     PEcAn.utils::status.start("OUTPUT")
@@ -67,9 +68,6 @@ if (PEcAn.utils::status.check("OUTPUT") == 0) {
 }
 
 ## Run ensemble analysis on model output ---------------------------------------
-
-
-
 
 
 ## Run benchmarking ------------------------------------------------------------

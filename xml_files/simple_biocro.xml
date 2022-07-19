@@ -41,7 +41,7 @@
 
   <model>
     <type>BIOCRO</type>
-    <binary>/home/carya/gsoc_project_2022/models/biocro.Rscript</binary>
+  <binary>/home/carya/gsoc_project_2022/models/biocro.Rscript</binary>
     <revision>1.0</revision>
   </model>
 
@@ -52,7 +52,7 @@
     <inputs>
       <met>
         <output>BIOCRO</output>
-        <path>home/carya/gsoc_project_2022/data/US-Bo1.2004</path>
+        <path>/home/carya/gsoc_project_2022/data/US-Bo1</path>
       </met>
     </inputs>
       <start.date>2004/01/01</start.date>
