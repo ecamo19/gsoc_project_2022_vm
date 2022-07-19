@@ -53,8 +53,19 @@ settings <- runModule.get.trait.data(settings)
 runModule.run.meta.analysis(settings)
 
 ## Write model specific configs ------------------------------------------------
-runModule.run.write.configs(settings)
-settings$model$type
+if (PEcAn.utils::status.check("CONFIG") == 0){
+    PEcAn.utils::status.start("CONFIG")
+    settings <- PEcAn.workflow::runModule.run.write.configs(settings)
+    PEcAn.settings::write.settings(settings, outputfile='pecan.CONFIGS.xml')
+    PEcAn.utils::status.end()
+} else if (file.exists(file.path(settings$outdir, 'pecan.CONFIGS.xml'))) {
+    settings <- PEcAn.settings::read.settings(file.path(settings$outdir, 'pecan.CONFIGS.xml'))
+}
+
+if ((length(which(commandArgs() == "--advanced")) != 0) && (PEcAn.utils::status.check("ADVANCED") == 0)) {
+    PEcAn.utils::status.start("ADVANCED")
+    q();
+}
 
 
 ## Start ecosystem model runs --------------------------------------------------
