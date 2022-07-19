@@ -13,8 +13,8 @@ setwd('/home/carya')
 getwd()
 
 # Read settings file -----------------------------------------------------------
-settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
-#settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
+#settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
+settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
 
 
 ## Configure settings ----------------------------------------------------------
@@ -54,20 +54,21 @@ runModule.run.meta.analysis(settings)
 
 ## Write model specific configs ------------------------------------------------
 runModule.run.write.configs(settings)
+settings$model$type
+
 
 ## Start ecosystem model runs --------------------------------------------------
-#debugonce(runModule.start.model.runs)
-PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = FALSE)
+debugonce(start.model.runs)
+start.model.runs(settings, settings$database$bety$write, stop.on.error = TRUE)
+
+debugonce(runModule.start.model.runs)
+PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
 
 ### Get results of model runs --------------------------------------------------
-
-if (PEcAn.utils::status.check("OUTPUT") == 0) {
-    PEcAn.utils::status.start("OUTPUT")
-    runModule.get.results(settings)
-    PEcAn.utils::status.end()
-}
+get.results(settings)
 
 ## Run ensemble analysis on model output ---------------------------------------
+runModule.run.ensemble.analysis(settings)
 
 
 ## Run benchmarking ------------------------------------------------------------
@@ -78,33 +79,6 @@ if ("benchmarking" %in% names(settings)
         papply(settings, function(x) {
             calc_benchmark(x, bety)
         })
-    PEcAn.utils::status.end()
-}
-
-## Pecan workflow complete -----------------------------------------------------
-if (PEcAn.utils::status.check("FINISHED") == 0) {
-    PEcAn.utils::status.start("FINISHED")
-    PEcAn.remote::kill.tunnel(settings)
-    db.query(
-        paste(
-            "UPDATE workflows SET finished_at=NOW() WHERE id=",
-            settings$workflow$id,
-            "AND finished_at IS NULL"
-        ),
-        params = settings$database$bety
-    )
-    
-    # Send email if configured
-    if (!is.null(settings$email)
-        && !is.null(settings$email$to)
-        && (settings$email$to != "")) {
-        sendmail(
-            settings$email$from,
-            settings$email$to,
-            paste0("Workflow has finished executing at ", base::date()),
-            paste0("You can find the results on ", settings$email$url)
-        )
-    }
     PEcAn.utils::status.end()
 }
 
