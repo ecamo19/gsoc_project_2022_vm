@@ -1,18 +1,16 @@
 <pecan>
   
   <database>
-      <bety>
-        <user>bety</user>
-        <password>bety</password>
-        <host>postgres</host>
-        <port>5432</port>
-        <dbname>bety</dbname>
-        <driver>PostgreSQL</driver>
-        <write>true</write>
-      </bety>
-      <dbfiles>/data/dbfiles</dbfiles>
+    <bety>
+      <driver>PostgreSQL</driver>
+      <user>bety</user>
+      <password>bety</password>
+      <host>postgres</host>
+      <dbname>bety</dbname>
+      <write>FALSE</write>
+    </bety>
+    <dbfiles>/biocro_results/dbfiles</dbfiles>
   </database>
-
 
   <pfts>
     <pft>
@@ -41,7 +39,7 @@
 
   <model>
     <type>BIOCRO</type>
-  <binary>/home/carya/gsoc_project_2022/models/biocro.Rscript</binary>
+  <binary>/gsoc_project_2022/models/biocro.Rscript</binary>
     <revision>1.0</revision>
   </model>
 
@@ -52,7 +50,7 @@
     <inputs>
       <met>
         <output>BIOCRO</output>
-        <path>/home/carya/gsoc_project_2022/data/US-Bo1</path>
+        <path>/gsoc_project_2022/data/US-Bo1</path>
       </met>
     </inputs>
       <start.date>2004/01/01</start.date>
