@@ -50,6 +50,10 @@ settings <- PEcAn.workflow::do_conversions(settings)
 ##  Query the trait database for data and priors -------------------------------
 settings <- runModule.get.trait.data(settings)
 
+
+## Check db connection ---------------------------------------------------------
+print(db.open(settings$database$bety))
+
 ## Run the PEcAn meta.analysis -------------------------------------------------
 runModule.run.meta.analysis(settings)
 
@@ -68,13 +72,12 @@ if ((length(which(commandArgs() == "--advanced")) != 0) && (PEcAn.utils::status.
     q();
 }
 
-
 ## Start ecosystem model runs --------------------------------------------------
 debugonce(start.model.runs)
 start.model.runs(settings, settings$database$bety$write, stop.on.error = TRUE)
 
-debugonce(runModule.start.model.runs)
-PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
+#debugonce(runModule.start.model.runs)
+#PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
 
 ### Get results of model runs --------------------------------------------------
 get.results(settings)
