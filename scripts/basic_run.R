@@ -7,6 +7,7 @@ rm(list = ls())
 
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
+library(PEcAn.BIOCRO)
 
 # Working directory ------------------------------------------------------------
 setwd('/home/carya')
