@@ -1,0 +1,60 @@
+
+<pecan>
+  <outdir>biocro_darpa_results</outdir>
+
+  <database>
+    <bety>
+      <driver>PostgreSQL</driver>
+      <user>bety</user>
+      <password>bety</password>
+      <host>postgres</host>
+      <dbname>bety</dbname>
+      <write>FALSE</write>
+    </bety>
+  </database>
+
+  <pfts>
+    <pft>
+       <name>salix</name>
+    </pft>
+  </pfts>
+
+  <ensemble>
+    <size>200</size>
+    <variable>AbvGrndWood</variable>
+  </ensemble>
+
+  <meta.analysis>
+    <iter>3000</iter>
+    <random.effects>TRUE</random.effects>
+    <threshold>1.2</threshold>
+    <update>AUTO</update>
+  </meta.analysis>
+
+  <sensitivity.analysis>
+    <variable>AbvGrndWood</variable>
+  </sensitivity.analysis>
+
+  <model>
+    <type>BIOCRO</type>
+    <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
+    <revision>0.95</revision>
+  </model>
+
+  <run>
+    <site>
+      <id>753</id>
+    </site>
+    <inputs>
+      <met>
+        <output>BIOCRO</output>
+        <path>~/gsoc_project_2022/data/US-Bo1</path>
+      </met>
+    </inputs>
+      <start.date>2004/01/01</start.date>
+      <end.date>2004/12/30</end.date>
+    <host>
+      <name>localhost</name>
+    </host>
+  </run>
+</pecan>
