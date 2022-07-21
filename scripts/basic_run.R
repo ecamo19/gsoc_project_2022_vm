@@ -40,9 +40,13 @@ settings$ensemble$samplingspace$parameters$method <- 'lhc'
 
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
 
+settings$host$runid
+#write.config.BIOCRO(defaults = settings$pfts)
 
 ## Write pecan.CHECKED.xml -----------------------------------------------------
 PEcAn.settings::write.settings(settings, outputfile = "pecan.CHECKED.xml")
+PEcAn.settings::check.workflow.settings(settings)
+
 
 ## Do conversions --------------------------------------------------------------
 settings <- PEcAn.workflow::do_conversions(settings)
@@ -73,7 +77,7 @@ if ((length(which(commandArgs() == "--advanced")) != 0) && (PEcAn.utils::status.
 }
 
 ## Start ecosystem model runs --------------------------------------------------
-debugonce(start.model.runs)
+#$debugonce(start.model.runs)
 start.model.runs(settings, settings$database$bety$write, stop.on.error = TRUE)
 
 #debugonce(runModule.start.model.runs)
