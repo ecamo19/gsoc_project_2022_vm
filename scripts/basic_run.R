@@ -77,7 +77,7 @@ if ((length(which(commandArgs() == "--advanced")) != 0) && (PEcAn.utils::status.
 }
 
 ## Start ecosystem model runs --------------------------------------------------
-#$debugonce(start.model.runs)
+#debugonce(start.model.runs)
 start.model.runs(settings, settings$database$bety$write, stop.on.error = TRUE)
 
 #debugonce(runModule.start.model.runs)
