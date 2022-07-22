@@ -1,5 +1,7 @@
+
 <pecan>
-  
+  <outdir>biocro_darpa_results</outdir>
+
   <database>
     <bety>
       <driver>PostgreSQL</driver>
@@ -13,7 +15,7 @@
 
   <pfts>
     <pft>
-      <name>salix</name>
+       <name>salix</name>
     </pft>
   </pfts>
 
@@ -24,22 +26,18 @@
 
   <meta.analysis>
     <iter>3000</iter>
-    <random.effects>FALSE</random.effects>
+    <random.effects>TRUE</random.effects>
     <threshold>1.2</threshold>
     <update>AUTO</update>
   </meta.analysis>
 
   <sensitivity.analysis>
-    <quantiles>
-      <sigma>-1</sigma>
-      <sigma>1</sigma>
-    </quantiles>
     <variable>AbvGrndWood</variable>
   </sensitivity.analysis>
 
   <model>
     <type>BIOCRO</type>
-  <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
+    <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
     <revision>0.95</revision>
   </model>
 
@@ -60,4 +58,3 @@
     </host>
   </run>
 </pecan>
-

@@ -1,44 +1,48 @@
-# Script objective -------------------------------------------------------------
+# Script's objective -----------------------------------------------------------
 
-# The main objective of this script  is to generate the post.distns.Rdata and 
-# prior.distns.Rdata needed in the run.write.configs function 
+# The main objective of this script  is to generate the necessary inputs to run 
+# the run.write.configs function 
+
+rm(list = ls())
 
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
+library(PEcAn.BIOCRO)
+library(PEcAn.utils)
+library(RCurl)
 
 # Working directory ------------------------------------------------------------
 setwd('/home/carya')
 getwd()
 
 # Read settings file -----------------------------------------------------------
-settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
+#settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
+settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
 
-## Configure settings ----------------------------------------------------------
+# Configure settings -----------------------------------------------------------
 
 # Get date
 path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
 
+# Set output dir
 settings$outdir <- file.path(path)
-settings$outdir
 
-settings$database$bety$write
-settings$database$bety$write <- FALSE
-
+# Modify settings
 settings$ensemble$size <- 100
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
 
 settings$pfts$pft$outdir <- file.path(settings$outdir, 'pft', 
-                                      settings$pfts$pft$name)
+                                            settings$pfts$pft$name)
 
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
 
 # PEcAn Workflow ---------------------------------------------------------------
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
 
-
 ## Write pecan.CHECKED.xml -----------------------------------------------------
 PEcAn.settings::write.settings(settings, outputfile = "pecan.CHECKED.xml")
+PEcAn.settings::check.workflow.settings(settings)
 
 ## Do conversions --------------------------------------------------------------
 settings <- PEcAn.workflow::do_conversions(settings)
@@ -46,19 +50,36 @@ settings <- PEcAn.workflow::do_conversions(settings)
 ##  Query the trait database for data and priors -------------------------------
 settings <- runModule.get.trait.data(settings)
 
+## Check db connection ---------------------------------------------------------
+print(db.open(settings$database$bety))
+
 ## Run the PEcAn meta.analysis -------------------------------------------------
 runModule.run.meta.analysis(settings)
 
 ## Write model specific configs ------------------------------------------------
-runModule.run.write.configs(settings)
+if (PEcAn.utils::status.check("CONFIG") == 0){
+    PEcAn.utils::status.start("CONFIG")
+    settings <- PEcAn.workflow::runModule.run.write.configs(settings)
+    PEcAn.settings::write.settings(settings, outputfile='pecan.CONFIGS.xml')
+    PEcAn.utils::status.end()
+} else if (file.exists(file.path(settings$outdir, 'pecan.CONFIGS.xml'))) {
+    settings <- PEcAn.settings::read.settings(file.path(settings$outdir, 'pecan.CONFIGS.xml'))
+}
+
+if ((length(which(commandArgs() == "--advanced")) != 0) && (PEcAn.utils::status.check("ADVANCED") == 0)) {
+    PEcAn.utils::status.start("ADVANCED")
+    q();
+}
 
 ## Start ecosystem model runs --------------------------------------------------
-debugonce(runModule.start.model.runs)
-PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
-settings$database$bety$write
+if (PEcAn.utils::status.check("MODEL") == 0) {
+    PEcAn.utils::status.start("MODEL")
+    PEcAn.remote::runModule.start.model.runs(settings, stop.on.error = FALSE)
+    PEcAn.utils::status.end()
+}
 
-# Get results of model runs ----------------------------------------------------
 
+### Get results of model runs --------------------------------------------------
 if (PEcAn.utils::status.check("OUTPUT") == 0) {
     PEcAn.utils::status.start("OUTPUT")
     runModule.get.results(settings)
@@ -66,47 +87,23 @@ if (PEcAn.utils::status.check("OUTPUT") == 0) {
 }
 
 ## Run ensemble analysis on model output ---------------------------------------
-
-
-
-
-
-## Run benchmarking ------------------------------------------------------------
-if ("benchmarking" %in% names(settings)
-    && "benchmark" %in% names(settings$benchmarking)) {
-    PEcAn.utils::status.start("BENCHMARKING")
-    results <-
-        papply(settings, function(x) {
-            calc_benchmark(x, bety)
-        })
+if ('ensemble' %in% names(settings) & PEcAn.utils::status.check("ENSEMBLE") == 0) {
+    PEcAn.utils::status.start("ENSEMBLE")
+    runModule.run.ensemble.analysis(settings, TRUE)
     PEcAn.utils::status.end()
 }
 
-## Pecan workflow complete -----------------------------------------------------
-if (PEcAn.utils::status.check("FINISHED") == 0) {
-    PEcAn.utils::status.start("FINISHED")
-    PEcAn.remote::kill.tunnel(settings)
-    db.query(
-        paste(
-            "UPDATE workflows SET finished_at=NOW() WHERE id=",
-            settings$workflow$id,
-            "AND finished_at IS NULL"
-        ),
-        params = settings$database$bety
-    )
-    
-    # Send email if configured
-    if (!is.null(settings$email)
-        && !is.null(settings$email$to)
-        && (settings$email$to != "")) {
-        sendmail(
-            settings$email$from,
-            settings$email$to,
-            paste0("Workflow has finished executing at ", base::date()),
-            paste0("You can find the results on ", settings$email$url)
-        )
-    }
+## Run sensitivity analysis on model output ------------------------------------
+if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SENSITIVITY") == 0) {
+    PEcAn.utils::status.start("SENSITIVITY")
+    runModule.run.sensitivity.analysis(settings)
     PEcAn.utils::status.end()
 }
+
+## Run parameter data assimilation ---------------------------------------------
+PEcAn.visualization::plot_netcdf("~/gsoc_project_2022/pecan_runs/run_2022-07-22/out/SA-salix-chi_leaf-0.159/2004.nc", 
+                                 "LAI")
+
+# End --------------------------------------------------------------------------
 
 
