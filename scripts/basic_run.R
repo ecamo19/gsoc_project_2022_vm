@@ -1,7 +1,7 @@
-# Script objective -------------------------------------------------------------
+# Script's objective -----------------------------------------------------------
 
-# The main objective of this script  is to generate the post.distns.Rdata and 
-# prior.distns.Rdata needed in the run.write.configs function 
+# The main objective of this script  is to generate the necessary inputs to run 
+# the run.write.configs function 
 
 rm(list = ls())
 
@@ -19,8 +19,7 @@ getwd()
 #settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
 settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
 
-
-## Configure settings ----------------------------------------------------------
+# Configure settings -----------------------------------------------------------
 
 # Get date
 path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
@@ -39,23 +38,17 @@ settings$pfts$pft$outdir <- file.path(settings$outdir, 'pft',
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
 
 # PEcAn Workflow ---------------------------------------------------------------
-
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
-
-settings$host$runid
-#write.config.BIOCRO(defaults = settings$pfts)
 
 ## Write pecan.CHECKED.xml -----------------------------------------------------
 PEcAn.settings::write.settings(settings, outputfile = "pecan.CHECKED.xml")
 PEcAn.settings::check.workflow.settings(settings)
-
 
 ## Do conversions --------------------------------------------------------------
 settings <- PEcAn.workflow::do_conversions(settings)
 
 ##  Query the trait database for data and priors -------------------------------
 settings <- runModule.get.trait.data(settings)
-
 
 ## Check db connection ---------------------------------------------------------
 print(db.open(settings$database$bety))
@@ -79,16 +72,12 @@ if ((length(which(commandArgs() == "--advanced")) != 0) && (PEcAn.utils::status.
 }
 
 ## Start ecosystem model runs --------------------------------------------------
-
 if (PEcAn.utils::status.check("MODEL") == 0) {
     PEcAn.utils::status.start("MODEL")
     PEcAn.remote::runModule.start.model.runs(settings, stop.on.error = FALSE)
     PEcAn.utils::status.end()
 }
 
-
-#debugonce(runModule.start.model.runs)
-#PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
 
 ### Get results of model runs --------------------------------------------------
 if (PEcAn.utils::status.check("OUTPUT") == 0) {
@@ -115,6 +104,6 @@ if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SEN
 PEcAn.visualization::plot_netcdf("~/gsoc_project_2022/pecan_runs/run_2022-07-22/out/SA-salix-chi_leaf-0.159/2004.nc", 
                                  "LAI")
 
-
+# End --------------------------------------------------------------------------
 
 
