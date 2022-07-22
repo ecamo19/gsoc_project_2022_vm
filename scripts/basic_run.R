@@ -8,6 +8,8 @@ rm(list = ls())
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
 library(PEcAn.BIOCRO)
+library(PEcAn.utils)
+library(RCurl)
 
 # Working directory ------------------------------------------------------------
 setwd('/home/carya')
@@ -77,28 +79,42 @@ if ((length(which(commandArgs() == "--advanced")) != 0) && (PEcAn.utils::status.
 }
 
 ## Start ecosystem model runs --------------------------------------------------
-#debugonce(start.model.runs)
-start.model.runs(settings, settings$database$bety$write, stop.on.error = TRUE)
+
+if (PEcAn.utils::status.check("MODEL") == 0) {
+    PEcAn.utils::status.start("MODEL")
+    PEcAn.remote::runModule.start.model.runs(settings, stop.on.error = FALSE)
+    PEcAn.utils::status.end()
+}
+
 
 #debugonce(runModule.start.model.runs)
 #PEcAn.remote::runModule.start.model.runs(settings,stop.on.error = TRUE)
 
 ### Get results of model runs --------------------------------------------------
-get.results(settings)
-
-## Run ensemble analysis on model output ---------------------------------------
-runModule.run.ensemble.analysis(settings)
-
-
-## Run benchmarking ------------------------------------------------------------
-if ("benchmarking" %in% names(settings)
-    && "benchmark" %in% names(settings$benchmarking)) {
-    PEcAn.utils::status.start("BENCHMARKING")
-    results <-
-        papply(settings, function(x) {
-            calc_benchmark(x, bety)
-        })
+if (PEcAn.utils::status.check("OUTPUT") == 0) {
+    PEcAn.utils::status.start("OUTPUT")
+    runModule.get.results(settings)
     PEcAn.utils::status.end()
 }
+
+## Run ensemble analysis on model output ---------------------------------------
+if ('ensemble' %in% names(settings) & PEcAn.utils::status.check("ENSEMBLE") == 0) {
+    PEcAn.utils::status.start("ENSEMBLE")
+    runModule.run.ensemble.analysis(settings, TRUE)
+    PEcAn.utils::status.end()
+}
+
+## Run sensitivity analysis on model output ------------------------------------
+if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SENSITIVITY") == 0) {
+    PEcAn.utils::status.start("SENSITIVITY")
+    runModule.run.sensitivity.analysis(settings)
+    PEcAn.utils::status.end()
+}
+
+## Run parameter data assimilation ---------------------------------------------
+PEcAn.visualization::plot_netcdf("~/gsoc_project_2022/pecan_runs/run_2022-07-22/out/SA-salix-chi_leaf-0.159/2004.nc", 
+                                 "LAI")
+
+
 
 
