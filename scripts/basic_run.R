@@ -27,7 +27,7 @@ path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
 # Set output dir
 settings$outdir <- file.path(path)
 
-# Modify settings
+# Modify xml
 settings$ensemble$size <- 100
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
