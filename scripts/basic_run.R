@@ -93,6 +93,8 @@ if ('ensemble' %in% names(settings) & PEcAn.utils::status.check("ENSEMBLE") == 0
     PEcAn.utils::status.end()
 }
 
+#PEcAn.utils::get.ensemble.samples
+
 ## Run sensitivity analysis on model output ------------------------------------
 if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SENSITIVITY") == 0) {
     PEcAn.utils::status.start("SENSITIVITY")
