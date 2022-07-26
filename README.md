@@ -48,9 +48,11 @@ __blue color = code runs and/or outputs are available__
   graph TD;
       simple_biocro.xml-->run.write.configs;
       simple_biocro.xml-->basic_run.R;
-      simple_biocro.xml-->model;
+      
       
       basic_run.R-->posterior.files[post.distns.Rdata or prior.distns.Rdata];
+      basic_run.R-->model;
+      
       posterior.files[post.distns.Rdata or prior.distns.Rdata]-->run.write.configs;
       run.write.configs-->output_1[updated settings with ensemble IDs for SA and ensemble analysis ];
       output_1[updated settings with ensemble IDs for SA and ensemble analysis]-->get.ensemble.samples;
