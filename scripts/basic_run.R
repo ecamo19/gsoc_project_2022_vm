@@ -7,7 +7,7 @@
 
 # list files or directories in working directory 
 remove_run <- list.files(path = "~/gsoc_project_2022/pecan_runs/",
-                         pattern = "run_",
+                         pattern = "pecan_run_salix",
                          full.names = TRUE)
 
 # delete the directory demo in working directory
@@ -33,7 +33,7 @@ settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_
 # Configure settings -----------------------------------------------------------
 
 # Get date
-path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
+path <- paste0('gsoc_project_2022/pecan_runs/pecan_run_salix')
 
 # Set output dir
 settings$outdir <- file.path(path)
