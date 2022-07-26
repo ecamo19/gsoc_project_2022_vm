@@ -1,24 +1,48 @@
-# Code objetive ----------------------------------------------------------------
+# Code objective ----------------------------------------------------------------
 # I am running this code for generating the env.samples.Rdata need it in the 
 # get.parameters function 
 
 getwd()
+setwd()
+rm(list = ls())
+
 # Load settings ----------------------------------------------------------------
-source("../scripts/load_settings.R")
+source("~/gsoc_project_2022/scripts/load_settings.R")
 
 
-# -------------------------------------------------------------------------
-pfts <- settings$pfts
-num.pfts <- length(settings$pfts)
+# Get general info: extract pft names ------------------------------------------
+
+# posterior.files Filenames for posteriors for drawing samples for ensemble and 
+# sensitivity  analysis (e.g. post.distns.Rdata, or prior.distns.Rdata)
+
+#get.parameter.samples <- function(settings, 
+#                                  posterior.files = rep(NA, length(settings$pfts)), 
+#                                  ens.sample.method = "uniform") 
+    
+
+posterior.files <-  load("./pecan_runs/pecan_run_salix/pft/salix/prior.distns.Rdata")
+
+ens.sample.method = "uniform"
+pfts      <- settings$pfts
+num.pfts  <- length(settings$pfts)
 pft.names <- list()
-outdirs <- list()
-
-# Open database connection -----------------------------------------------------
+outdirs   <- list()
+    
+# Open database connection
 con <- try(PEcAn.DB::db.open(settings$database$bety))
-
 on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
     
-length(settings$pfts$pft$name)
+# If we fail to connect to DB then we set to NULL
+
+if (inherits(con, "try-error"))  {
+        con <- NULL
+        PEcAn.logger::logger.warn("We were not able to successfully establish a connection with Bety ")
+} else {
+    print("success")
+}
+
+
+# First: loop ------------------------------------------------------------------
 
 for (i.pft in seq_along(pfts)) {
         pft.names[i.pft] <- settings$pfts[[i.pft]]$name
@@ -26,61 +50,71 @@ for (i.pft in seq_along(pfts)) {
         ### If no PFT(s) are specified insert NULL to warn user
         if (length(pft.names) == 0) {
             pft.names[1] <- "NULL"
-            print("no pfts")}}
+            print("step 1")
+            print(pft.names)
+        }
         
-# Get output directory info
-
-if(!is.null(settings$pfts[[i.pft]]$outdir)){
-            print("true")
+        ### Get output directory info
+        if(!is.null(settings$pfts[[i.pft]]$outdir)){
             outdirs[i.pft] <- settings$pfts[[i.pft]]$outdir
-            print(outdirs)        
-        } else {
-            print("false")
+            
+            print("step 2:success")
+            print(outdirs)
+            
+        } else { 
             outdirs[i.pft] <- unique(dbfile.check(type = "Posterior",
                                                   container.id = settings$pfts[[i.pft]]$posteriorid,con=con)$file_path)
-        }  
-    
-dir()
+            print("step 3")
+            print(outdirs)
+        }
+        
+}   
 
-## Generate empty list arrays for output.
+
+## Modify outdir that I get for reading Rdata from folder -----------------------
+outdirs <- paste0("~/",outdirs)    
+    
+## Generate empty list arrays for output ---------------------------------------
 trait.samples <- sa.samples <- ensemble.samples <- env.samples <- runs.samples <- param.names <- list()
     
 # flag determining whether samples are independent (e.g. when params fitted individually)
 independent <- TRUE
 
-getwd()
-## Load PFT priors and posteriors
-for (i in seq_along(pft.names)) {
+posterior.files
+
+dir()
+#setwd("./pecan_runs/pecan_run_salix/")
+# Second: loop Load PFT priors and posteriors ----------------------------------
+#for (i in seq_along(pft.names)) {
         
-        rm(prior.distns, post.distns, trait.mcmc)
+rm(prior.distns, post.distns, trait.mcmc)
         
-        ## Load posteriors
-        if (!is.na(posterior.files[1])) {
-            print("1")
-            # Load specified file
-            load(posterior.files[i])
-            
-            if (!exists("prior.distns") & exists("post.distns")) {
-                print("2")
-                prior.distns <- post.distns
-            }
-        } else {
-            # Default to most recent posterior in the workflow, or the prior if there is none
-            print("3")
-            fname <- file.path(outdirs[i], "post.distns.Rdata")
-            
-            if (file.exists(fname)) {
-                print("4")
+## Load posteriors -------------------------------------------------------------
+
+# Method 1
+if (!is.na(posterior.files[1])) {
+    # Load specified file
+    load(posterior.files[1])} else {print("Not loaded")}
+
+# Method 2    
+if (!exists("prior.distns") & exists("post.distns")){
+    prior.distns <- post.distns 
+    print("true")} else {print("Not loaded")}
+  
+# Method 3              
+# Default to most recent posterior in the workflow, or the prior if there is none
+
+# Method 4              
+fname <- file.path(outdirs[1], "post.distns.Rdata")
+if(file.exists(fname)){
+                print("true")
                 load(fname)
                 prior.distns <- post.distns
-            } else {
-                print("5")
-                load(file.path(outdirs[i], "prior.distns.Rdata"))
-            }
-        }
-}
-        
-        ### Load trait mcmc data (if exists, either from MA or PDA)
+                } else {print("Not loaded")} 
+
+load(file.path(outdirs[1], "prior.distns.Rdata")) 
+
+## Load trait mcmc data (if exists, either from MA or PDA) ---------------------
         if (!is.null(settings$pfts[[i]]$posteriorid) && !inherits(con, "try-error")) {# first check if there are any files associated with posterior ids
             files <- PEcAn.DB::dbfile.check("Posterior",
                                             settings$pfts[[i]]$posteriorid, 
@@ -165,15 +199,17 @@ for (i in seq_along(pft.names)) {
             }
             trait.samples[[pft.name]][[prior]] <- samples
         }
-    }  ### End for loop
-    
-    # if samples are independent, set param.names to NULL
-    # this is important for downstream, when param.names is not NULL MCMC will be sampled accordingly
-    if(independent){
+#    } 
+
+# Third ------------------------------------------------------------------------
+
+# if samples are independent, set param.names to NULL
+# this is important for downstream, when param.names is not NULL MCMC will be sampled accordingly
+if(independent){
         param.names <- NULL
     }
     
-    if ("sensitivity.analysis" %in% names(settings)) {
+if ("sensitivity.analysis" %in% names(settings)) {
         
         ### Get info on the quantiles to be run in the sensitivity analysis (if requested)
         quantiles <- get.quantiles(settings$sensitivity.analysis$quantiles)
@@ -202,7 +238,10 @@ for (i in seq_along(pft.names)) {
         }
     }
     
-    save(ensemble.samples, trait.samples, sa.samples, runs.samples, env.samples, 
+# save samples -----------------------------------------------------------------
+save(ensemble.samples, trait.samples, sa.samples, runs.samples, env.samples, 
          file = file.path(settings$outdir, "samples.Rdata"))
-} # get.parameter.samples
+# get.parameter.samples
+
+
 
