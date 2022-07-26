@@ -21,23 +21,23 @@
    <name>salix</name>
   </type>
   <canopyControl>
-   <Sp>1.54860508947906</Sp>
+   <Sp>1.55340514435082</Sp>
    <SpD>0</SpD>
    <nlayers>10</nlayers>
-   <kd>0.261746849723045</kd>
+   <kd>0.270982566698488</kd>
    <comment></comment>
-   <chi.l>2.92661903368142</chi.l>
+   <chi.l>3.1654170652845</chi.l>
    <comment></comment>
    <mResp>0.02, 0.03</mResp>
    <heightFactor>3</heightFactor>
-   <GrowthRespFraction>0.320523407626083</GrowthRespFraction>
+   <GrowthRespFraction>0.388210303888097</GrowthRespFraction>
   </canopyControl>
   <photoParms>
-   <vmax>46.8408557790936</vmax>
-   <jmax>143.505619085773</jmax>
-   <Rd>0.881303119352765</Rd>
-   <b0>0.0334072379410087</b0>
-   <b1>6.35884786513787</b1>
+   <vmax>48.3279918645297</vmax>
+   <jmax>142.719068495756</jmax>
+   <Rd>1.7218050682146</Rd>
+   <b0>0.0219882459751859</b0>
+   <b1>5.72545195737023</b1>
    <Catm>400</Catm>
    <O2>210</O2>
   </photoParms>

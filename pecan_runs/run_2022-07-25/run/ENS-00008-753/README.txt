@@ -1,7 +1,7 @@
 runtype     : ensemble
- workflow id :  2022-07-25-15-16-01 
+ workflow id :  2022-07-25-22-02-37 
  ensemble id :  NA 
- run         :  8 / 100 
+ run         :  8 / 10 
  run id      :  ENS-00008-753 
  pft names   :  salix 
  model       :  BIOCRO 

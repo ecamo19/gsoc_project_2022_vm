@@ -18,13 +18,23 @@
   </pft>
  </pfts>
  <ensemble>
-  <size>100</size>
+  <size>10</size>
   <variable>AbvGrndWood</variable>
   <samplingspace>
+   <met>
+    <method>sampling</method>
+   </met>
+   <soil>
+    <parent>parameters</parent>
+   </soil>
+   <vegetation>
+    <parent>soil</parent>
+   </vegetation>
    <parameters>
     <method>lhc</method>
    </parameters>
   </samplingspace>
+  <ensemble.id>666</ensemble.id>
   <start.year>2004</start.year>
   <end.year>2004</end.year>
  </ensemble>
@@ -81,7 +91,7 @@
   <checked>TRUE</checked>
  </settings.info>
  <workflow>
-  <id>2022-07-25-15-16-01</id>
+  <id>2022-07-25-22-02-37</id>
  </workflow>
  <rundir>/home/carya/gsoc_project_2022/pecan_runs/run_2022-07-25/run</rundir>
  <modeloutdir>/home/carya/gsoc_project_2022/pecan_runs/run_2022-07-25/out</modeloutdir>

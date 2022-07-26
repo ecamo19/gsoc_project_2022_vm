@@ -24,19 +24,19 @@
    <Sp>1.5504223839061</Sp>
    <SpD>0</SpD>
    <nlayers>10</nlayers>
-   <kd>0.257899706977283</kd>
+   <kd>0.257922440543783</kd>
    <comment></comment>
    <chi.l>2.94208807411873</chi.l>
    <comment></comment>
    <mResp>0.02, 0.03</mResp>
    <heightFactor>3</heightFactor>
-   <GrowthRespFraction>0.350017901581451</GrowthRespFraction>
+   <GrowthRespFraction>0.350002499353246</GrowthRespFraction>
   </canopyControl>
   <photoParms>
    <vmax>49.107793033967</vmax>
    <jmax>143.739170038805</jmax>
    <Rd>1.69773836332168</Rd>
-   <b0>0.0234987473640224</b0>
+   <b0>0.0234963933071186</b0>
    <b1>6.19832324720159</b1>
    <Catm>400</Catm>
    <O2>210</O2>
