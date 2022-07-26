@@ -1,11 +1,9 @@
 # Objective --------------------------------------------------------------------
-# This script loads the settings file 
-
-
+# This script loads the settings file
 
 # Change working directory to pecan run ----------------------------------------
 setwd('~/gsoc_project_2022/pecan_runs')
-print(paste0("Current working directory: ",getwd()))
+
 
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
@@ -32,3 +30,7 @@ settings$ensemble$size <- 10
 #                                      settings$pfts$pft$name)
 
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
+
+# Print wd ---------------------------------------------------------------------
+print(paste0("Current working directory: ",getwd()))
+
