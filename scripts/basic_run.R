@@ -3,6 +3,18 @@
 # The main objective of this script  is to generate the necessary inputs to run 
 # the run.write.configs function 
 
+# Remove previous pecan runs to avoid clutter ----------------------------------
+
+# list files or directories in working directory 
+remove_run <- list.files(path = "~/gsoc_project_2022/pecan_runs/",
+                         pattern = "run_",
+                         full.names = TRUE)
+
+# delete the directory demo in working directory
+unlink(remove_run, recursive=TRUE)
+
+
+# Clean environment ------------------------------------------------------------
 rm(list = ls())
 
 # Load packages ----------------------------------------------------------------
@@ -77,7 +89,6 @@ if (PEcAn.utils::status.check("MODEL") == 0) {
     PEcAn.remote::runModule.start.model.runs(settings, stop.on.error = FALSE)
     PEcAn.utils::status.end()
 }
-PEcAn.utils::get.sa.sample.list(pft.samples, env.samples, 0.5)
 
 
 ### Get results of model runs --------------------------------------------------
