@@ -1,9 +1,8 @@
-# Code objective ----------------------------------------------------------------
+# Code objective ---------------------------------------------------------------
 # I am running this code for generating the env.samples.Rdata need it in the 
 # get.parameters function 
 
 getwd()
-setwd()
 rm(list = ls())
 
 # Load settings ----------------------------------------------------------------
@@ -33,7 +32,6 @@ con <- try(PEcAn.DB::db.open(settings$database$bety))
 on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
     
 # If we fail to connect to DB then we set to NULL
-
 if (inherits(con, "try-error"))  {
         con <- NULL
         PEcAn.logger::logger.warn("We were not able to successfully establish a connection with Bety ")
@@ -42,7 +40,7 @@ if (inherits(con, "try-error"))  {
 }
 
 
-# First: loop ------------------------------------------------------------------
+# First: loop for getting outdir -----------------------------------------------
 
 for (i.pft in seq_along(pfts)) {
         pft.names[i.pft] <- settings$pfts[[i.pft]]$name
@@ -71,8 +69,8 @@ for (i.pft in seq_along(pfts)) {
 }   
 
 
-## Modify outdir that I get for reading Rdata from folder -----------------------
-outdirs <- paste0("~/",outdirs)    
+# Modify outdir that I get for reading Rdata from folder ----------------------
+outdirs <- paste0("~/", outdirs)    
     
 ## Generate empty list arrays for output ---------------------------------------
 trait.samples <- sa.samples <- ensemble.samples <- env.samples <- runs.samples <- param.names <- list()
@@ -83,16 +81,18 @@ independent <- TRUE
 posterior.files
 
 dir()
-#setwd("./pecan_runs/pecan_run_salix/")
+
 # Second: loop Load PFT priors and posteriors ----------------------------------
-#for (i in seq_along(pft.names)) {
+
+# for (i in seq_along(pft.names)) {
         
-rm(prior.distns, post.distns, trait.mcmc)
+#rm(prior.distns, post.distns, trait.mcmc)
         
 ## Load posteriors -------------------------------------------------------------
 
 # Method 1
 if (!is.na(posterior.files[1])) {
+  
     # Load specified file
     load(posterior.files[1])} else {print("Not loaded")}
 
@@ -104,7 +104,6 @@ if (!exists("prior.distns") & exists("post.distns")){
 # Method 3              
 # Default to most recent posterior in the workflow, or the prior if there is none
 
-# Method 4              
 fname <- file.path(outdirs[1], "post.distns.Rdata")
 if(file.exists(fname)){
                 print("true")
@@ -112,12 +111,16 @@ if(file.exists(fname)){
                 prior.distns <- post.distns
                 } else {print("Not loaded")} 
 
+# Method 4              
 load(file.path(outdirs[1], "prior.distns.Rdata")) 
 
 ## Load trait mcmc data (if exists, either from MA or PDA) ---------------------
-        if (!is.null(settings$pfts[[i]]$posteriorid) && !inherits(con, "try-error")) {# first check if there are any files associated with posterior ids
+
+if (!is.null(settings$pfts[[1]]$posteriorid) && !inherits(con, "try-error")) {
+    
+            # first check if there are any files associated with posterior ids
             files <- PEcAn.DB::dbfile.check("Posterior",
-                                            settings$pfts[[i]]$posteriorid, 
+                                            settings$pfts[[1]]$posteriorid, 
                                             con, settings$host$name, return.all = TRUE)
             tid <- grep("trait.mcmc.*Rdata", files$file_name)
             if (length(tid) > 0) {
@@ -129,61 +132,77 @@ load(file.path(outdirs[1], "prior.distns.Rdata"))
                 if(grepl("mcmc.pda", trait.mcmc.file)) independent <- FALSE 
                 # NOTE: Global MA samples will also be together, right?
                 
-                
-            }else{
-                PEcAn.logger::logger.info("No trait.mcmc file is associated with this posterior ID.")
-                ma.results <- FALSE
-            }
-        }else if ("trait.mcmc.Rdata" %in% dir(unlist(outdirs[i]))) {
-            PEcAn.logger::logger.info("Defaulting to trait.mcmc file in the pft directory.")
-            ma.results <- TRUE
-            load(file.path(outdirs[i], "trait.mcmc.Rdata"))
+            } else{
+                    PEcAn.logger::logger.info("No trait.mcmc file is associated with this posterior ID.")
+                    ma.results <- FALSE
+                    
+            }} else if ("trait.mcmc.Rdata" %in% dir(unlist(outdirs[1]))) {
+                        PEcAn.logger::logger.info("Defaulting to trait.mcmc file in the pft directory.")
+                        ma.results <- TRUE
+                        load(file.path(outdirs[1], "trait.mcmc.Rdata"))
+                        print("File updated")
         } else {
             ma.results <- FALSE
         }
+
         
-        pft.name <- unlist(pft.names[i])
+## When no ma for a trait, sample from prior -----------------------------------
+## Trim all chains to shortest mcmc chain, else 20000 samples
+
+# Get name        
+pft.name <- unlist(pft.names[1])
+
+priors <- rownames(prior.distns)
         
-        ### When no ma for a trait, sample from prior
-        ### Trim all chains to shortest mcmc chain, else 20000 samples
-        priors <- rownames(prior.distns)
-        
-        if (exists("trait.mcmc")) {
-            param.names[[i]] <- names(trait.mcmc)
-            names(param.names)[i] <- pft.name
+if (exists("trait.mcmc")) {
+            param.names[[1]] <- names(trait.mcmc)
+            names(param.names)[1] <- pft.name
             
             samples.num <- min(sapply(trait.mcmc, function(x) nrow(as.matrix(x))))
             
-            ## report which traits use MA results, which use priors
-            if (length(param.names[[i]]) > 0) {
-                PEcAn.logger::logger.info("PFT", pft.names[i], "has MCMC samples for:\n",
-                                          paste0(param.names[[i]], collapse = "\n "))
+            # report which traits use MA results, which use priors
+            if (length(param.names[[1]]) > 0) {
+                PEcAn.logger::logger.info("PFT", pft.names[1], "has MCMC samples for:\n",
+                                          paste0(param.names[[1]], collapse = "\n "))
             }
-            if (!all(priors %in% param.names[[i]])) {
-                PEcAn.logger::logger.info("PFT", pft.names[i], "will use prior distributions for:\n", 
-                                          paste0(priors[!priors %in% param.names[[i]]], collapse = "\n "))
+            if (!all(priors %in% param.names[[1]])) {
+                PEcAn.logger::logger.info("PFT", pft.names[1], "will use prior distributions for:\n", 
+                                          paste0(priors[!priors %in% param.names[[1]]], collapse = "\n "))
             }
-        } else {
-            param.names[[i]] <- list()
-            samples.num <- 20000
-            PEcAn.logger::logger.info("No MCMC results for PFT", pft.names[i])
-            PEcAn.logger::logger.info("PFT", pft.names[i], "will use prior distributions for", 
-                                      priors)
+        #} else {
+        #    param.names[[1]] <- list()
+        #    samples.num <- 20000
+        #    PEcAn.logger::logger.info("No MCMC results for PFT", pft.names[i])
+        #    PEcAn.logger::logger.info("PFT", pft.names[i], "will use prior distributions for", 
+        #                              priors)
         }
         
-        PEcAn.logger::logger.info("using ", samples.num, "samples per trait")
-        if (ens.sample.method == "halton") {
+PEcAn.logger::logger.info("using ", samples.num, "samples per trait")
+
+## Ensemble sampling method ----------------------------------------------------
+
+if (ens.sample.method == "halton") {
             q_samples <- randtoolbox::halton(n = samples.num, dim = length(priors))
+            print("Halton used")
+            
         } else if (ens.sample.method == "sobol") {
             q_samples <- randtoolbox::sobol(n = samples.num, dim = length(priors), scrambling = 3)
+            print("sobol used")
+        
         } else if (ens.sample.method == "torus") {
             q_samples <- randtoolbox::torus(n = samples.num, dim = length(priors))
+            print("torus used")
+            
         } else if (ens.sample.method == "lhc") {
             q_samples <- PEcAn.emulator::lhc(t(matrix(0:1, ncol = length(priors), nrow = 2)), samples.num)
+            print("lhc used")
+            
         } else if (ens.sample.method == "uniform") {
             q_samples <- matrix(stats::runif(samples.num * length(priors)),
                                 samples.num, 
                                 length(priors))
+            print("uniform used")
+            
         } else {
             PEcAn.logger::logger.info("Method ", ens.sample.method, " has not been implemented yet, using uniform random sampling")
             # uniform random
@@ -191,15 +210,20 @@ load(file.path(outdirs[1], "prior.distns.Rdata"))
                                 samples.num, 
                                 length(priors))
         }
-        for (prior in priors) {
-            if (prior %in% param.names[[i]]) {
+
+##  Get trait samples  ---------------------------------------------------------
+
+for (prior in priors) {
+  
+            if (prior %in% param.names[[1]]) {
                 samples <- trait.mcmc[[prior]] %>% purrr::map(~ .x[,'beta.o']) %>% unlist() %>% as.matrix()
+                
             } else {
                 samples <- PEcAn.priors::get.sample(prior.distns[prior, ], samples.num, q_samples[ , priors==prior])
             }
             trait.samples[[pft.name]][[prior]] <- samples
         }
-#    } 
+
 
 # Third ------------------------------------------------------------------------
 
