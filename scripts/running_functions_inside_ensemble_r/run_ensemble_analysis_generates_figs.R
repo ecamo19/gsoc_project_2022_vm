@@ -4,12 +4,9 @@
 
 rm(list = ls())
 
-# Load functions ---------------------------------------------------------------
+# Load functions settings file -------------------------------------------------
+source("~/gsoc_project_2022/scripts/load_settings.R")
 
-
-# Change working directory to pecan run ----------------------------------------
-setwd('~/gsoc_project_2022/pecan_runs')
-dir()
 
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
@@ -93,8 +90,6 @@ load(fname)
 my.dat = unlist(ensemble.output)
 
 ## Generate ensemble figures  --------------------------------------------------
-
-
 ensemble.results <- list()
 
 ## Boxplots and histogram
@@ -141,6 +136,7 @@ fname <- ensemble.filename(settings, "ensemble.ts.analysis", "Rdata",
                                variable = variable.fn, 
                                start.year = start.year, 
                                end.year = end.year)
+
 save(ensemble.ts.analysis, file = fname)
 
 # End --------------------------------------------------------------------------
