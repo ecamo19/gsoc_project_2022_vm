@@ -16,7 +16,6 @@ setwd('/home/carya')
 getwd()
 
 # Read settings file -----------------------------------------------------------
-#settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
 settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
 
 # Configure settings -----------------------------------------------------------
@@ -28,7 +27,7 @@ path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
 settings$outdir <- file.path(path)
 
 # Modify xml
-settings$ensemble$size <- 100
+settings$ensemble$size <- 10
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
 
@@ -36,6 +35,7 @@ settings$pfts$pft$outdir <- file.path(settings$outdir, 'pft',
                                             settings$pfts$pft$name)
 
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
+settings$ensemble$ensemble.id <- 666
 
 # PEcAn Workflow ---------------------------------------------------------------
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
@@ -77,9 +77,12 @@ if (PEcAn.utils::status.check("MODEL") == 0) {
     PEcAn.remote::runModule.start.model.runs(settings, stop.on.error = FALSE)
     PEcAn.utils::status.end()
 }
+PEcAn.utils::get.sa.sample.list(pft.samples, env.samples, 0.5)
 
 
 ### Get results of model runs --------------------------------------------------
+# Step for generating ensemble.output
+
 if (PEcAn.utils::status.check("OUTPUT") == 0) {
     PEcAn.utils::status.start("OUTPUT")
     runModule.get.results(settings)
@@ -93,8 +96,6 @@ if ('ensemble' %in% names(settings) & PEcAn.utils::status.check("ENSEMBLE") == 0
     PEcAn.utils::status.end()
 }
 
-#PEcAn.utils::get.ensemble.samples
-
 ## Run sensitivity analysis on model output ------------------------------------
 if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SENSITIVITY") == 0) {
     PEcAn.utils::status.start("SENSITIVITY")
@@ -102,9 +103,6 @@ if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SEN
     PEcAn.utils::status.end()
 }
 
-## Run parameter data assimilation ---------------------------------------------
-PEcAn.visualization::plot_netcdf("~/gsoc_project_2022/pecan_runs/run_2022-07-22/out/SA-salix-chi_leaf-0.159/2004.nc", 
-                                 "LAI")
 
 # End --------------------------------------------------------------------------
 
