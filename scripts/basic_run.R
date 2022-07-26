@@ -5,12 +5,12 @@
 
 # Remove previous pecan runs to avoid clutter ----------------------------------
 
-# list files or directories in working directory 
+# Shows files or directories in working directory 
 remove_run <- list.files(path = "~/gsoc_project_2022/pecan_runs/",
                          pattern = "pecan_run_salix",
                          full.names = TRUE)
 
-# delete the directory demo in working directory
+# Deletes the directory in working directory 
 unlink(remove_run, recursive=TRUE)
 
 
