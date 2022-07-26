@@ -46,9 +46,9 @@ __blue color = code runs and/or outputs are available__
 
 ```mermaid
   graph TD;
-      simple.xml-->run.write.configs;
-      simple.xml-->basic_run.R;
-      simple.xml-->model;
+      simple_biocro.xml-->run.write.configs;
+      simple_biocro.xml-->basic_run.R;
+      simple_biocro.xml-->model;
       
       basic_run.R-->posterior.files[post.distns.Rdata or prior.distns.Rdata];
       posterior.files[post.distns.Rdata or prior.distns.Rdata]-->run.write.configs;
