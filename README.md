@@ -50,13 +50,14 @@ __blue color = code runs and/or outputs are available__
       simple_biocro.xml-->basic_run.R;
       
       basic_run.R-->run.write.configs;
-      
       basic_run.R-->model;
       
       
       run.write.configs-->output_1[updated settings with ensemble IDs for SA and ensemble analysis ];
       run.write.configs-->posterior.files[post.distns.Rdata or prior.distns.Rdata];
       output_1[updated settings with ensemble IDs for SA and ensemble analysis]-->get.ensemble.samples;
+      
+      posterior.files[post.distns.Rdata or prior.distns.Rdata]-->get.ensemble.samples;
       
       input_get_ensemble_1[pft.samples]-->get.ensemble.samples;
       input_get_ensemble_2[env.samples]-->get.ensemble.samples;
