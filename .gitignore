@@ -40,4 +40,5 @@ vignettes/*.pdf
 
 # Ignore directories
 pecan_runs/
+ls
 
