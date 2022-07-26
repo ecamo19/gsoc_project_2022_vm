@@ -68,7 +68,7 @@ __blue color = code runs and/or outputs are available__
       
       output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions]-->write.ensemble.configs;
       model-->write.ensemble.configs;
-      simple.xml-->write.ensemble.configs;
+      simple_biocro.xml-->write.ensemble.configs;
       
       write.ensemble.configs-->output_write_ensemble_1[$runs = data frame of runids];
       write.ensemble.configs-->output_write_ensemble_2[$ensemble.id = the ensemble ID for these runs];
