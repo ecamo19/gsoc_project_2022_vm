@@ -53,7 +53,7 @@ __blue color = code runs and/or outputs are available__
       
       basic_run.R-->model;
       
-      posterior.files[post.distns.Rdata or prior.distns.Rdata]-->run.write.configs;
+      
       run.write.configs-->output_1[updated settings with ensemble IDs for SA and ensemble analysis ];
       run.write.configs-->posterior.files[post.distns.Rdata or prior.distns.Rdata];
       output_1[updated settings with ensemble IDs for SA and ensemble analysis]-->get.ensemble.samples;
