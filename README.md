@@ -80,7 +80,7 @@ __blue color = code runs and/or outputs are available__
       style basic_run.R fill:#00758f
       style output_1 fill:#00758f
       style run.write.configs fill:#00758f
-      style simple.xml fill:#00758f
+      style simple_biocro.xml fill:#00758f
       style posterior.files fill:#00758f
       style input_get_ensemble_1 fill:#00758f
       
