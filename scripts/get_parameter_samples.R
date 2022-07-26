@@ -69,7 +69,7 @@ for (i.pft in seq_along(pfts)) {
 }   
 
 
-# Modify outdir that I get for reading Rdata from folder ----------------------
+# Modify outdir that I get for reading Rdata from folder -----------------------
 outdirs <- paste0("~/", outdirs)    
     
 ## Generate empty list arrays for output ---------------------------------------
@@ -229,7 +229,7 @@ for (prior in priors) {
         }
 
 
-# Third ------------------------------------------------------------------------
+# Third: Get sensitivity and ensemble samples  ---------------------------------
 
 # if samples are independent, set param.names to NULL
 # this is important for downstream, when param.names is not NULL MCMC will be sampled accordingly
