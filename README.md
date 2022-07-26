@@ -74,7 +74,8 @@ __blue color = code runs and/or outputs are available__
       write.ensemble.configs-->output_write_ensemble_3[$samples with ids and samples used for each tag.];
       write.ensemble.configs-->output_write_ensemble_4[sensitivity analysis configuration files as a side effect];
       
-      <>note<!/>
+      <> (This is a comment, it will not be included)
+      
       style basic_run.R fill:#00758f
       style output_1 fill:#00758f
       style run.write.configs fill:#00758f
