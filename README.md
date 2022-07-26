@@ -32,7 +32,7 @@ Quantifying precisely the degree of uncertainty in models predictions and acknow
 └── xml_files
     ├── pecan.CONFIGS_original.xml      # Reference file
     ├── pecan_run_2.xml                 # xml file used in run_2_work.R
-    └── simple.xml                      # xml file used in the basic_run.R
+    └── simple_biocro.xml               # xml file used in the basic_run.R
 
 4 directories, 17 files
 
@@ -63,6 +63,7 @@ __blue color = code runs and/or outputs are available__
       get_parameter_samples-->input_get_ensemble_1[pft.samples];  
       get_parameter_samples-->input_get_ensemble_3[ensemble.size];
       get_parameter_samples-->input_get_ensemble_4[param.names];
+      
       get.ensemble.samples-->output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions];
       
       output_get_ensemble[ensemble.samples, matrix of random samples from trait distributions]-->write.ensemble.configs;
