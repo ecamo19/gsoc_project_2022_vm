@@ -115,9 +115,7 @@ if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SEN
 }
 
 
-# Clean environment ------------------------------------------------------------
-rm(list = ls())
-
 # End --------------------------------------------------------------------------
+rm(list = ls())
 
 
