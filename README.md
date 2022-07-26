@@ -57,7 +57,7 @@ __blue color = code runs and/or outputs are available__
       run.write.configs-->posterior.files[post.distns.Rdata or prior.distns.Rdata];
       output_1[updated settings with ensemble IDs for SA and ensemble analysis]-->get.ensemble.samples;
       
-      posterior.files[post.distns.Rdata or prior.distns.Rdata]-->get.ensemble.samples;
+      posterior.files[post.distns.Rdata or prior.distns.Rdata]-->get_parameter_samples;
       
       input_get_ensemble_1[pft.samples]-->get.ensemble.samples;
       input_get_ensemble_2[env.samples]-->get.ensemble.samples;
