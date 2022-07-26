@@ -76,7 +76,7 @@ __blue color = code runs and/or outputs are available__
       
       %% Blue color boxes
       
-      get_parameter_samples fill:#00758f
+      style get_parameter_samples fill:#00758f
       style basic_run.R fill:#00758f
       style output_1 fill:#00758f
       style run.write.configs fill:#00758f
