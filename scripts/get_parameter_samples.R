@@ -122,6 +122,9 @@ if (!is.null(settings$pfts[[1]]$posteriorid) && !inherits(con, "try-error")) {
             files <- PEcAn.DB::dbfile.check("Posterior",
                                             settings$pfts[[1]]$posteriorid, 
                                             con, settings$host$name, return.all = TRUE)
+            
+            
+            # These line don't run
             tid <- grep("trait.mcmc.*Rdata", files$file_name)
             if (length(tid) > 0) {
                 trait.mcmc.file <- file.path(files$file_path[tid], files$file_name[tid])
@@ -131,7 +134,8 @@ if (!is.null(settings$pfts[[1]]$posteriorid) && !inherits(con, "try-error")) {
                 # PDA samples are fitted together, to preserve correlations downstream let workflow know they should go together
                 if(grepl("mcmc.pda", trait.mcmc.file)) independent <- FALSE 
                 # NOTE: Global MA samples will also be together, right?
-                
+            # These linen don't run
+                    
             } else{
                     PEcAn.logger::logger.info("No trait.mcmc file is associated with this posterior ID.")
                     ma.results <- FALSE
@@ -232,12 +236,16 @@ for (prior in priors) {
 if(independent){
         param.names <- NULL
     }
-    
+
+
+## Sensitivity samples ---------------------------------------------------------
+
 if ("sensitivity.analysis" %in% names(settings)) {
         
-        ### Get info on the quantiles to be run in the sensitivity analysis (if requested)
+        ## Get info on the quantiles to be run in the sensitivity analysis (if requested)
         quantiles <- get.quantiles(settings$sensitivity.analysis$quantiles)
-        ### Get info on the years to run the sensitivity analysis (if requested)
+        
+        ## Get info on the years to run the sensitivity analysis (if requested)
         sa.years <- data.frame(sa.start = settings$sensitivity.analysis$start.year, 
                                sa.end = settings$sensitivity.analysis$end.year)
         
@@ -246,14 +254,20 @@ if ("sensitivity.analysis" %in% names(settings)) {
         ### Generate list of sample quantiles for SA run
         sa.samples <- get.sa.sample.list(pft = trait.samples, env = env.samples, 
                                          quantiles = quantiles)
-    }
-    if ("ensemble" %in% names(settings)) {
+}
+
+## Ensemble samples ------------------------------------------------------------
+
+if ("ensemble" %in% names(settings)) {
+    
         if (settings$ensemble$size == 1) {
             ## run at median if only one run in ensemble
             ensemble.samples <- get.sa.sample.list(pft = trait.samples, env = env.samples, 
                                                    quantiles = 0.5)
             #if it's not there it's one probably
-            if (is.null(settings$ensemble$size)) settings$ensemble$size<-1
+            if (is.null(settings$ensemble$size)) settings$ensemble$size <- 1
+            print("ensemble size greater than 1")
+            
         } else if (settings$ensemble$size > 1) {
             
             ## subset the trait.samples to ensemble size using Halton sequence
@@ -265,6 +279,7 @@ if ("sensitivity.analysis" %in% names(settings)) {
 # save samples -----------------------------------------------------------------
 save(ensemble.samples, trait.samples, sa.samples, runs.samples, env.samples, 
          file = file.path(settings$outdir, "samples.Rdata"))
+
 # get.parameter.samples
 
 
