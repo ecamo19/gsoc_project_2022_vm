@@ -65,6 +65,7 @@ __blue color = code runs and/or outputs are available__
       input_get_ensemble_4[param.names]-->get.ensemble.samples;
       
       get_parameter_samples-->input_get_ensemble_1[pft.samples];  
+      get_parameter_samples-->input_get_ensemble_2[env.samples];
       get_parameter_samples-->input_get_ensemble_3[ensemble.size];
       get_parameter_samples-->input_get_ensemble_4[param.names];
       
