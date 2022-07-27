@@ -34,5 +34,5 @@ settings$ensemble$size <- 10
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
 
 # Print wd ---------------------------------------------------------------------
-cat(blue(paste0("Current working directory: ", getwd())))
+cat(blue(paste0("\n Current working directory: ", getwd())))
 
