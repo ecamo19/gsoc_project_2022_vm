@@ -90,7 +90,6 @@ if (PEcAn.utils::status.check("MODEL") == 0) {
     PEcAn.utils::status.end()
 }
 
-
 ### Get results of model runs --------------------------------------------------
 # Step for generating ensemble.output
 
@@ -113,7 +112,6 @@ if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SEN
     runModule.run.sensitivity.analysis(settings)
     PEcAn.utils::status.end()
 }
-
 
 # End --------------------------------------------------------------------------
 rm(list = ls())

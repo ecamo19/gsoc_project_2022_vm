@@ -8,6 +8,8 @@ getwd()
 # Load packages ----------------------------------------------------------------
 library(PEcAn.all)
 library(devtools)
+# Changes the color of a message
+library(crayon)
 
 # Load xml file  ---------------------------------------------------------------
 settings <- read.settings("./pecan_runs/pecan_run_salix/pecan.CONFIGS.xml")
@@ -32,5 +34,5 @@ settings$ensemble$size <- 10
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
 
 # Print wd ---------------------------------------------------------------------
-print(paste0("Current working directory: ", getwd()))
+cat(blue(paste0("Current working directory: ", getwd())))
 
