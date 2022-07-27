@@ -39,7 +39,6 @@ if (inherits(con, "try-error"))  {
   cat(blue(paste0(" DB opens")))
 }
 
-
 # First: loop for getting outdir -----------------------------------------------
 
 for (i.pft in seq_along(pfts)) {
