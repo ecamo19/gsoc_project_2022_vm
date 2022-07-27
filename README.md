@@ -88,15 +88,14 @@ __blue color = code runs and/or outputs are available__
       style run.write.configs fill:#00758f
       style simple_biocro.xml fill:#00758f
       style posterior.files fill:#00758f
-      style input_get_ensemble_1 fill:#00758f
       
+      style input_get_ensemble_1 fill:#00758f
+      style input_get_ensemble_2 fill:#00758f
       style input_get_ensemble_3 fill:#00758f
       style input_get_ensemble_4 fill:#00758f
       style model fill:#00758f 
       
       %% Red color boxes  
-      
-      style input_get_ensemble_2 fill:#880808
       style get.ensemble.samples fill:#880808
       style output_get_ensemble  fill:#880808 
       
