@@ -7,6 +7,8 @@ rm(list = ls())
 
 # Load settings and .RData -----------------------------------------------------
 source("~/gsoc_project_2022/scripts/load_settings.R")
+source("~/gsoc_project_2022/scripts/issue_5_github/get_parameter_samples_ecm.R")
+
 load("./pecan_runs/pecan_run_salix/samples.Rdata")
 load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
 
@@ -55,15 +57,18 @@ ensemble.size <- settings$ensemble$size
 
 # Not sure which file to use the trait.mcmc.RData or the trait.samples.RData
 pft.samples <- trait.mcmc
+
 names(pft.samples)
 
-# env.samples <- ??
+# This object is created by the get_parameter_function, here is a just an empty 
+# list
+env.samples 
 
 method <- "uniform"
 
 param.names = NULL
 
-# First: env.file --------------------------------------------------------------
+# First: Adding env.samples to pft.samples  ------------------------------------
 
 ensemble.size <- as.numeric(ensemble.size)
 
@@ -74,11 +79,15 @@ if (ensemble.size <= 0) {
     
         ans <- PEcAn.utils::get.sa.sample.list(pft.samples, env.samples, 0.5)
 
-        } else {
+        } else { # closes in line 238
     
-            pft.samples[[length(pft.samples) + 1]] <- env.samples
+            # This code just add a empty list env at the end of pft.samples 
+            # since we don't have any env.Rdata. In our case is an empty list
+            # appended in the trait.mcmc
+            
+             pft.samples[[length(pft.samples) + 1]] <- env.samples
     
-            names(pft.samples)[length(pft.samples)] <- "env"
+             names(pft.samples)[length(pft.samples)] <- "env"
     
             pft2col <- NULL
     
@@ -88,8 +97,9 @@ if (ensemble.size <= 0) {
                 
                 }
     
-        }    
+        } # delete, closes line 83 and line ~239
 
+# total.sample.num: 4 chains * 6 traits = 24
 total.sample.num <- sum(sapply(pft.samples, length))
 random.samples <- NULL
 
@@ -150,87 +160,88 @@ if (method == "halton") {
 
 # Third: Get Ensemble Samples --------------------------------------------------
 
+# Test Difference between ensemble.names ?
 ensemble.samples <- list()
-
 col.i <- 0
-same.i
 
-# Test Difference between ensemble.names = NULL and Not NULL 
-# Remember that ensembles.names are generated in the get.parameter.samples
+## First loop ------------------------------------------------------------------
 
-
-# First loop -------------------------------------------------------------------
+# This first loop returns n-empty matrices(6 here) of size ensemble.size*nchains 
+# (10*4 = 40) and 6 vectors of size ensemble.size (10 here)
 
 for (pft.i in seq(pft.samples)) {
-    
-    # Generate a empty matrix
-    ensemble.samples[[1]] <- matrix(nrow = ensemble.size, 
-                                        
-                                        # number of mcmc chains
-                                        ncol = length(pft.samples[[1]]))
-    
-    # Meaning we want to keep MCMC samples together
-    if(length(pft.samples[[pft.i]]) > 0 & !is.null(param.names)){ print(TRUE)} 
-        
-        if (method == "halton") {
-            
-            same.i <- round(randtoolbox::halton(ensemble.size) * 
-                                length(pft.samples[[pft.i]][[1]]))
-            
-        } else if (method == "sobol") {
-            
-            same.i <- round(randtoolbox::sobol(ensemble.size, scrambling = 3) * 
-                                length(pft.samples[[pft.i]][[1]]))
-            
-        } else if (method == "torus") {
-            same.i <- round(randtoolbox::torus(ensemble.size) * 
-                                length(pft.samples[[pft.i]][[1]]))
-            
-        } else if (method == "lhc") {
-            same.i <- round(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, 
-                                                           nrow = 2)), 
-                                                  ensemble.size) * 
-                                  length(pft.samples[[pft.i]][[1]])))
-            
-        } else if (method == "uniform") {
-            same.i <- sample.int(length(pft.samples[[1]][[1]]), 
-                                 ensemble.size)
-            
-        } else {
-            PEcAn.logger::logger.info("Method ", method, 
-                                      " has not been implemented yet, using 
-                                      uniform random sampling")
-            # uniform random
-            same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), 
-                                 ensemble.size)
-        }
-        
-}
-  
 
+  # Generate empty matrices and add them to the empty ensemble.samples
+  ensemble.samples[[pft.i]] <- matrix(nrow = ensemble.size, 
+                                      
+                                      # Number of chains
+                                      ncol = length(pft.samples[[pft.i]]))
+  
+  print(ensemble.samples[[pft.i]])
+  
+  # meaning we want to keep MCMC samples together
+  
+  if(length(pft.samples[[pft.i]])>0 & !is.null(param.names)){ 
+    
+    if (method == "halton") {
+      same.i <- round(randtoolbox::halton(ensemble.size) * 
+                        length(pft.samples[[pft.i]][[1]]))
+      
+    } else if (method == "sobol") {
+      same.i <- round(randtoolbox::sobol(ensemble.size, scrambling = 3) * 
+                                              length(pft.samples[[pft.i]][[1]]))
+      
+    } else if (method == "torus") {
+      same.i <- round(randtoolbox::torus(ensemble.size) * 
+                                              length(pft.samples[[pft.i]][[1]]))
+      
+    } else if (method == "lhc") {
+      same.i <- round(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, nrow = 2)), 
+                                            ensemble.size) * 
+                                             length(pft.samples[[pft.i]][[1]])))
+      
+    } else if (method == "uniform") {
+      same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
+      
+    } else {
+      PEcAn.logger::logger.info("Method ", method, " has not been implemented 
+                                                     yet, using uniform random 
+                                                     sampling")
+      
+      # uniform random
+      same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
+      }
+  print(same.i)
+  }
+
+## Second loop -----------------------------------------------------------------
+  for (trait.i in seq(pft.samples[[pft.i]])) {
+    
+    col.i <- col.i + 1
+    
+    if(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]){ # keeping samples
+      ensemble.samples[[pft.i]][, trait.i] <- pft.samples[[pft.i]][[trait.i]][same.i]
+    } else{
+          ensemble.samples[[pft.i]][, trait.i] <- stats::quantile(pft.samples[[pft.i]][[trait.i]],
+                                                              random.samples[, col.i])
+    }
+  }  # end trait
+  
+  ensemble.samples[[pft.i]] <- as.data.frame(ensemble.samples[[pft.i]])
+  colnames(ensemble.samples[[pft.i]]) <- names(pft.samples[[pft.i]])
+  
+} # closes the loop  #end pft
 
 ## -----------------------------------------------------------------------------
-    for (trait.i in seq(pft.samples[[pft.i]])) {
-        col.i <- col.i + 1
-        
-        if(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]){ # keeping samples
-            ensemble.samples[[pft.i]][, trait.i] <- pft.samples[[pft.i]][[trait.i]][same.i]
-            
-        } else{
-            ensemble.samples[[pft.i]][, trait.i] <- stats::quantile(pft.samples[[pft.i]][[trait.i]],
-                                                                    random.samples[, col.i])
-        }
-    }  # end trait
-    
-    ensemble.samples[[pft.i]] <- as.data.frame(ensemble.samples[[pft.i]])
-    colnames(ensemble.samples[[pft.i]]) <- names(pft.samples[[pft.i]])
-}  # end pft
-
 names(ensemble.samples) <- names(pft.samples)
 ans <- ensemble.samples
-}
+
+#} # the closes the else in line 83
+
 return(ans)
-} 
+
+
+#} closes the function get.ensemble.samples
 
 
 
