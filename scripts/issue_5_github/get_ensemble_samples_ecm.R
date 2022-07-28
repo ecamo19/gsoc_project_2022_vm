@@ -12,7 +12,6 @@ source("~/gsoc_project_2022/scripts/issue_5_github/get_parameter_samples_ecm.R")
 load("./pecan_runs/pecan_run_salix/samples.Rdata")
 load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
 
-
 # Function parameters ----------------------------------------------------------
 # Get parameter values used in ensemble
 
@@ -58,6 +57,10 @@ ensemble.size <- settings$ensemble$size
 # Not sure which file to use the trait.mcmc.RData or the trait.samples.RData
 pft.samples <- trait.mcmc
 
+# Object created for running the first section Adding env.samples to pft.samples
+pft.samples_2 <- trait.mcmc
+
+# Check names
 names(pft.samples)
 
 # This object is created by the get_parameter_function, here is a just an empty 
@@ -77,23 +80,25 @@ if (ensemble.size <= 0) {
 
     } else if (ensemble.size == 1) {
     
-        ans <- PEcAn.utils::get.sa.sample.list(pft.samples, env.samples, 0.5)
-
+        ans <- PEcAn.utils::get.sa.sample.list(pft.samples_2, env.samples, 0.5)
+        
+        # Most of the code starts after this else
+        
         } else { # closes in line 238
     
             # This code just add a empty list env at the end of pft.samples 
             # since we don't have any env.Rdata. In our case is an empty list
             # appended in the trait.mcmc
             
-             pft.samples[[length(pft.samples) + 1]] <- env.samples
+            pft.samples_2[[length(pft.samples_2) + 1]] <- env.samples
     
-             names(pft.samples)[length(pft.samples)] <- "env"
+            names(pft.samples_2)[length(pft.samples_2)] <- "env"
     
             pft2col <- NULL
     
-            for (i in seq_along(pft.samples)) {
+            for (i in seq_along(pft.samples_2)) {
         
-                pft2col <- c(pft2col, rep(i, length(pft.samples[[i]])))
+                pft2col <- c(pft2col, rep(i, length(pft.samples_2[[i]])))
                 
                 }
     
@@ -103,11 +108,15 @@ if (ensemble.size <= 0) {
 total.sample.num <- sum(sapply(pft.samples, length))
 random.samples <- NULL
 
-# Second: Sampling methods -----------------------------------------------------
+# Second: Get a random sample methods ------------------------------------------
+
+# From all the values in pft.samples get a matrix with random values 
+# (sampled following method) of size ensemble.size*total.sample.num 
+# (here 6 pft*4 chains)
+
 
 # Typically, ... is used for passing additional arguments on to a subsequent 
 # function.    
-    
     
 if (method == "halton") {
         PEcAn.logger::logger.info("Using ", method, "method for sampling")
@@ -156,7 +165,9 @@ if (method == "halton") {
                                  ensemble.size, 
                                  total.sample.num)
     }
-    
+
+# This output, 
+random.samples
 
 # Third: Get Ensemble Samples --------------------------------------------------
 
@@ -168,6 +179,10 @@ col.i <- 0
 
 # This first loop returns n-empty matrices(6 here) of size ensemble.size*nchains 
 # (10*4 = 40) and 6 vectors of size ensemble.size (10 here)
+
+# Do not include env.samples if this is a empty object, because if included, 
+# the code below will produce length(pft.samples) + 1 empty matrices being the 
+# last one a matrix with no cols
 
 for (pft.i in seq(pft.samples)) {
 
@@ -210,18 +225,29 @@ for (pft.i in seq(pft.samples)) {
       
       # uniform random
       same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
-      }
-  print(same.i)
+      }  
   }
+  print(same.i)
 
+} # Delete "}" for running the loop fully, First loop + Second loop 
+
+# First loop works, returns empty matrices with vectors    
+ 
 ## Second loop -----------------------------------------------------------------
   for (trait.i in seq(pft.samples[[pft.i]])) {
     
     col.i <- col.i + 1
     
-    if(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]){ # keeping samples
+    # keeping samples
+    if(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]){
+      
+      # Get the value of pft.samples in chain n from pft i 
+      # and add it to ensemble.samples   
       ensemble.samples[[pft.i]][, trait.i] <- pft.samples[[pft.i]][[trait.i]][same.i]
+      
     } else{
+      
+          #      
           ensemble.samples[[pft.i]][, trait.i] <- stats::quantile(pft.samples[[pft.i]][[trait.i]],
                                                               random.samples[, col.i])
     }
@@ -230,7 +256,7 @@ for (pft.i in seq(pft.samples)) {
   ensemble.samples[[pft.i]] <- as.data.frame(ensemble.samples[[pft.i]])
   colnames(ensemble.samples[[pft.i]]) <- names(pft.samples[[pft.i]])
   
-} # closes the loop  #end pft
+# } # closes the loop, First loop + Second loop # end pft
 
 ## -----------------------------------------------------------------------------
 names(ensemble.samples) <- names(pft.samples)
@@ -241,7 +267,7 @@ ans <- ensemble.samples
 return(ans)
 
 
-#} closes the function get.ensemble.samples
+#} # closes the function get.ensemble.samples
 
 
 
