@@ -8,7 +8,6 @@ rm(list = ls())
 
 # Load settings and .RData -----------------------------------------------------
 source("~/gsoc_project_2022/scripts/load_settings.R")
-source("~/gsoc_project_2022/scripts/issue_5_github/get_parameter_samples_ecm.R")
 
 load("./pecan_runs/pecan_run_salix/samples.Rdata")
 load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
@@ -266,7 +265,7 @@ for (pft.i in seq(pft.samples)) {
   # Convert matrix to data frame
   ensemble.samples[[pft.i]] <- as.data.frame(ensemble.samples[[pft.i]])
   
-  # Colnames to each column
+# Colnames to each column
   colnames(ensemble.samples[[pft.i]]) <- names(pft.samples[[pft.i]])
   
 } # closes loop, First loop + Second loop # end pft
@@ -275,16 +274,24 @@ for (pft.i in seq(pft.samples)) {
 print(ensemble.samples)
 
 names(ensemble.samples) <- names(pft.samples)
-ans <- ensemble.samples
+#ans <- ensemble.samples
+
 
 #} # the closes the else in line 83
 
 #return(ans)
-ans
+#ans
 
 #} # closes the function get.ensemble.samples
 
+ensemble.samples
 
+# Clean environment ------------------------------------------------------------
+rm(list=setdiff(ls(), "ensemble.samples"))
+cat(crayon::blue(paste0("Ensemble samples dataframe created")))
+
+
+# End --------------------------------------------------------------------------
 
 
 
