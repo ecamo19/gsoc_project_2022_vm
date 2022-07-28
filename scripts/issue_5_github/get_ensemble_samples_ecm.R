@@ -247,7 +247,7 @@ for (pft.i in seq(pft.samples)) {
     col.i <- col.i + 1
     
     # keeping samples
-    if(isTRUE(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]) && # Line add for avoiding Error in if () { : argument is of length zero
+    if(isTRUE(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]) && # Line added for avoiding Error in if () { : argument is of length zero
        names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]) {
       
       # Get the value of pft.samples in chain n from pft iand add it to 
