@@ -94,11 +94,12 @@ __blue color = code runs and/or outputs are available__
       style input_get_ensemble_3 fill:#00758f
       style input_get_ensemble_4 fill:#00758f
       style model fill:#00758f 
+      style get.ensemble.samples fill:#00758f
+       style output_get_ensemble fill:#00758f 
       
       %% Red color boxes  
-      style get.ensemble.samples fill:#880808
-      style output_get_ensemble  fill:#880808 
       
+     
       style write.ensemble.configs fill:#880808
       style output_write_ensemble_1 fill:#880808
       style output_write_ensemble_2 fill:#880808
