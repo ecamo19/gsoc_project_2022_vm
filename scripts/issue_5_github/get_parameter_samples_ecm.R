@@ -28,7 +28,7 @@ outdirs   <- list()
     
 # Open database connection
 con <- try(PEcAn.DB::db.open(settings$database$bety))
-on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
+#on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
     
 # If we fail to connect to DB then we set to NULL
 if (inherits(con, "try-error"))  {
@@ -55,7 +55,7 @@ for (i.pft in seq_along(pfts)) {
         if(!is.null(settings$pfts[[i.pft]]$outdir)){
             outdirs[i.pft] <- settings$pfts[[i.pft]]$outdir
             
-            print("step 2:success")
+            #print("step 2:success")
             print(outdirs)
             
         } else { 
@@ -66,7 +66,7 @@ for (i.pft in seq_along(pfts)) {
         }
         # Modify outdir that I got previously for reading Rdata from folder
         outdirs <- paste0("~/", outdirs)
-        cat(blue(paste0("\n Outdir: ", outdirs)))        
+        print(cat(blue(paste0("\n Outdir: ", outdirs))))        
 }   
 
 
@@ -112,7 +112,7 @@ if(!exists("prior.distns")) {
     load(file.path(outdirs[1], "prior.distns.Rdata"))
     cat(blue(paste0("\n prior.distns loaded")))
     } else {
-      cat(blue(paste0("\n prior.distns previously loaded")))
+      print(cat(blue(paste0("\n prior.distns previously loaded"))))
 }
 
 
@@ -160,7 +160,7 @@ if (!is.null(settings$pfts[[1]]$posteriorid) && !inherits(con, "try-error")) {
             ma.results <- FALSE}
 
 if(exists("trait.mcmc")) {
-  cat(blue(paste0("\n trait.mcmc.RData loaded")))
+  print(cat(blue(paste0("\n trait.mcmc.RData loaded"))))
 } 
         
 ## When no ma for a trait, sample from prior -----------------------------------
@@ -222,7 +222,7 @@ if (ens.sample.method == "halton") {
             q_samples <- matrix(stats::runif(samples.num * length(priors)),
                                 samples.num, 
                                 length(priors))
-            cat(blue(paste0("\n Ensemble sampling method: Uniform")))
+            cat(blue(paste0("\n Ensemble sampling method: Uniform ")))
             
         } else {
             PEcAn.logger::logger.info("Method ", ens.sample.method, " has not 
@@ -281,7 +281,7 @@ if ("sensitivity.analysis" %in% names(settings)) {
                                          quantiles = quantiles)
         
         if(exists("sa.samples")) {
-          cat(blue(paste0("\n Sensitivity samples generated")))} 
+          print(cat(blue(paste0("\n Sensitivity samples generated "))))} 
         
 }
 
@@ -308,7 +308,7 @@ if ("ensemble" %in% names(settings)) {
                                                      param.names)}
   
         if(exists("ensemble.samples")) {
-          cat(blue(paste0("\n Ensemble samples generated")))} 
+          print(cat(blue(paste0("\n Ensemble samples generated "))))} 
 }
 
 # save samples -----------------------------------------------------------------
