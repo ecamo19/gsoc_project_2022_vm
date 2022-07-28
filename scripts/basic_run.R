@@ -3,6 +3,18 @@
 # The main objective of this script  is to generate the necessary inputs to run 
 # the run.write.configs function 
 
+# Remove previous pecan runs to avoid clutter ----------------------------------
+
+# Shows files or directories in working directory 
+remove_run <- list.files(path = "~/gsoc_project_2022/pecan_runs/",
+                         pattern = "pecan_run_salix",
+                         full.names = TRUE)
+
+# Deletes the directory in working directory 
+unlink(remove_run, recursive=TRUE)
+
+
+# Clean environment ------------------------------------------------------------
 rm(list = ls())
 
 # Load packages ----------------------------------------------------------------
@@ -16,19 +28,18 @@ setwd('/home/carya')
 getwd()
 
 # Read settings file -----------------------------------------------------------
-#settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple.xml")
 settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_biocro.xml")
 
 # Configure settings -----------------------------------------------------------
 
 # Get date
-path <- paste0('gsoc_project_2022/pecan_runs/run_', Sys.Date())
+path <- paste0('gsoc_project_2022/pecan_runs/pecan_run_salix')
 
 # Set output dir
 settings$outdir <- file.path(path)
 
-# Modify settings
-settings$ensemble$size <- 100
+# Modify xml
+settings$ensemble$size <- 10
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
 
@@ -36,6 +47,7 @@ settings$pfts$pft$outdir <- file.path(settings$outdir, 'pft',
                                             settings$pfts$pft$name)
 
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
+settings$ensemble$ensemble.id <- 666
 
 # PEcAn Workflow ---------------------------------------------------------------
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
@@ -78,8 +90,9 @@ if (PEcAn.utils::status.check("MODEL") == 0) {
     PEcAn.utils::status.end()
 }
 
-
 ### Get results of model runs --------------------------------------------------
+# Step for generating ensemble.output
+
 if (PEcAn.utils::status.check("OUTPUT") == 0) {
     PEcAn.utils::status.start("OUTPUT")
     runModule.get.results(settings)
@@ -100,10 +113,7 @@ if ('sensitivity.analysis' %in% names(settings) & PEcAn.utils::status.check("SEN
     PEcAn.utils::status.end()
 }
 
-## Run parameter data assimilation ---------------------------------------------
-PEcAn.visualization::plot_netcdf("~/gsoc_project_2022/pecan_runs/run_2022-07-22/out/SA-salix-chi_leaf-0.159/2004.nc", 
-                                 "LAI")
-
 # End --------------------------------------------------------------------------
+rm(list = ls())
 
 
