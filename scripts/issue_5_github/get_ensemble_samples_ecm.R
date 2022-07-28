@@ -1,4 +1,5 @@
 # Code objective ---------------------------------------------------------------
+
 # I am running this code for understanding how the pecan's get.ensemble.samples 
 # function works
 
@@ -194,41 +195,48 @@ for (pft.i in seq(pft.samples)) {
   
   print(ensemble.samples[[pft.i]])
   
+  
+  # Get vector of values of size ensemble.size that will be used as 
+  # indices aka object[same.i]
   # meaning we want to keep MCMC samples together
   
-  if(length(pft.samples[[pft.i]])>0 & !is.null(param.names)){ 
+  if(length(pft.samples[[pft.i]]) > 0 & !is.null(param.names)){ 
     
     if (method == "halton") {
+      
       same.i <- round(randtoolbox::halton(ensemble.size) * 
                         length(pft.samples[[pft.i]][[1]]))
       
     } else if (method == "sobol") {
+      
       same.i <- round(randtoolbox::sobol(ensemble.size, scrambling = 3) * 
                                               length(pft.samples[[pft.i]][[1]]))
       
     } else if (method == "torus") {
+      
       same.i <- round(randtoolbox::torus(ensemble.size) * 
                                               length(pft.samples[[pft.i]][[1]]))
       
     } else if (method == "lhc") {
+      
       same.i <- round(c(PEcAn.emulator::lhc(t(matrix(0:1, ncol = 1, nrow = 2)), 
                                             ensemble.size) * 
                                              length(pft.samples[[pft.i]][[1]])))
       
     } else if (method == "uniform") {
+      
       same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
       
     } else {
+      
       PEcAn.logger::logger.info("Method ", method, " has not been implemented 
                                                      yet, using uniform random 
                                                      sampling")
       
-      # uniform random
       same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
-      }  
+    }  
   }
-  print(same.i)
-
+    print(same.i)
 } # Delete "}" for running the loop fully, First loop + Second loop 
 
 # First loop works, returns empty matrices with vectors    
@@ -248,8 +256,7 @@ for (pft.i in seq(pft.samples)) {
     } else{
       
           #      
-          ensemble.samples[[pft.i]][, trait.i] <- stats::quantile(pft.samples[[pft.i]][[trait.i]],
-                                                              random.samples[, col.i])
+          ensemble.samples[[1]][, 1] <- stats::quantile(pft.samples[[1]][[1]], random.samples[, col.i])
     }
   }  # end trait
   
