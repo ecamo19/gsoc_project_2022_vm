@@ -64,7 +64,7 @@ pft.samples_2 <- trait.mcmc
 # Check names
 names(pft.samples)
 
-# This object is created by the get_parameter_function, here is a just an empty 
+# This object is created by the get_parameter_function, here is an empty 
 # list
 env.samples 
 
@@ -195,7 +195,6 @@ for (pft.i in seq(pft.samples)) {
   
   print(ensemble.samples[[pft.i]])
   
-  
   # Get vector of values of size ensemble.size that will be used as 
   # indices aka object[same.i]
   # meaning we want to keep MCMC samples together
@@ -234,10 +233,11 @@ for (pft.i in seq(pft.samples)) {
                                                      sampling")
       
       same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
-    }  
+      }  
   }
     print(same.i)
-} # Delete "}" for running the loop fully, First loop + Second loop 
+    
+#} # Delete "}" for running the loop fully, First loop + Second loop 
 
 # First loop works, returns empty matrices with vectors    
  
@@ -247,7 +247,8 @@ for (pft.i in seq(pft.samples)) {
     col.i <- col.i + 1
     
     # keeping samples
-    if(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]){
+    # 
+    if(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]){# Error occurs in this line
       
       # Get the value of pft.samples in chain n from pft i 
       # and add it to ensemble.samples   
@@ -255,15 +256,15 @@ for (pft.i in seq(pft.samples)) {
       
     } else{
       
-          #      
-          ensemble.samples[[1]][, 1] <- stats::quantile(pft.samples[[1]][[1]], random.samples[, col.i])
-    }
+          #
+          ensemble.samples[[pft.i]][, trait.i] <- stats::quantile(pft.samples[[pft.i]][[trait.i]],random.samples[, col.i])
+      }
   }  # end trait
   
   ensemble.samples[[pft.i]] <- as.data.frame(ensemble.samples[[pft.i]])
   colnames(ensemble.samples[[pft.i]]) <- names(pft.samples[[pft.i]])
   
-# } # closes the loop, First loop + Second loop # end pft
+} # closes the loop, First loop + Second loop # end pft
 
 ## -----------------------------------------------------------------------------
 names(ensemble.samples) <- names(pft.samples)
