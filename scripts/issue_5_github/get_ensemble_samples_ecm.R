@@ -193,7 +193,7 @@ for (pft.i in seq(pft.samples)) {
                                       # Number of chains
                                       ncol = length(pft.samples[[pft.i]]))
   
-  print(ensemble.samples[[pft.i]])
+  #print(ensemble.samples[[pft.i]])
   
   # Get vector of values of size ensemble.size that will be used as 
   # indices aka object[same.i]
@@ -235,7 +235,7 @@ for (pft.i in seq(pft.samples)) {
       same.i <- sample.int(length(pft.samples[[pft.i]][[1]]), ensemble.size)
       }  
   }
-    print(same.i)
+    #print(same.i)
     
 #} # Delete "}" for running the loop fully, First loop + Second loop 
 
@@ -247,8 +247,8 @@ for (pft.i in seq(pft.samples)) {
     col.i <- col.i + 1
     
     # keeping samples
-    # 
-    if(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]){# Error occurs in this line
+    if(isTRUE(names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]) &&
+       names(pft.samples[[pft.i]])[trait.i] %in% param.names[[pft.i]]) {
       
       # Get the value of pft.samples in chain n from pft i 
       # and add it to ensemble.samples   
@@ -258,22 +258,28 @@ for (pft.i in seq(pft.samples)) {
       
           #
           ensemble.samples[[pft.i]][, trait.i] <- stats::quantile(pft.samples[[pft.i]][[trait.i]],random.samples[, col.i])
-      }
-  }  # end trait
+          }
+   
+  } # End of second loop # end trait
   
+  # Convert matrix to data frame
   ensemble.samples[[pft.i]] <- as.data.frame(ensemble.samples[[pft.i]])
+  
+  # Colnames to each column
   colnames(ensemble.samples[[pft.i]]) <- names(pft.samples[[pft.i]])
   
-} # closes the loop, First loop + Second loop # end pft
+} # closes loop, First loop + Second loop # end pft
 
-## -----------------------------------------------------------------------------
+# Check ensemble results
+print(ensemble.samples)
+
 names(ensemble.samples) <- names(pft.samples)
 ans <- ensemble.samples
 
 #} # the closes the else in line 83
 
-return(ans)
-
+#return(ans)
+ans
 
 #} # closes the function get.ensemble.samples
 
