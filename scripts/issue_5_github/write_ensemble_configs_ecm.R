@@ -1,6 +1,5 @@
 # Function's original information ----------------------------------------------
-
-
+# 
 # Writes config files for use in meta-analysis and returns a list of run ids.
 # Given a pft.xml object, a list of lists as supplied by get.sa.samples, 
 # a name to distinguish the output files, and the directory to place the files.
@@ -17,10 +16,7 @@
 # 
 # param write.to.db logical: Record this run in BETY?
 # 
-# param restart In case this is a continuation of an old simulation. restart 
-# needs to be a list with name tags of runid, inputs, new.params (parameters), 
-# new.state (initial condition), ensemble.id (ensemble id), 
-# start.time and stop.time.See Details.
+
 #
 # @return list, containing $runs = data frame of runids, $ensemble.id = the 
 # ensemble ID for these runs and $samples with ids and samples used for each tag.
@@ -50,17 +46,16 @@ library(dplyr)
 
 # Load setting and data --------------------------------------------------------
 source("~/gsoc_project_2022/scripts/issue_5_github/get_ensemble_samples_ecm.R")
-
 source("~/gsoc_project_2022/scripts/load_settings.R")
 
 # Not sure if these are necessary 
 load("./pecan_runs/pecan_run_salix/samples.Rdata")
-load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
+load("./pecan_runs/pecan_run_salix/pft/salix/trait.data.Rdata")
 
 # Specifying parameters --------------------------------------------------------
 
 # Not sure about this parameter
-defaults <- load("./pecan_runs/pecan_run_salix/pft/salix/trait.data.Rdata")
+defaults <- load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
 
 model <- settings$model$type
 
@@ -70,12 +65,15 @@ settings
 
 clean <-  FALSE 
 
-write.to.db <-  TRUE
-
 restart <- NULL
 
-# First: -----------------------------------------------------------------------
-con <- NULL
+# Open database connection for section 2
+con <- try(PEcAn.DB::db.open(settings$database$bety))
+#on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
+
+write.to.db <- TRUE
+
+# First: General configuration, db, workflow id --------------------------------
 
 (my.write.config <- paste("write.config.", model, sep = ""))
 
@@ -83,11 +81,12 @@ con <- NULL
     
 if (is.null(ensemble.samples)) {
         return(list(runs = NULL, ensemble.id = NULL))
-        print("pass")
-    }
+
+    } else {print("not null")}
     
 # See if we need to write to DB
-write.to.db <- as.logical(settings$database$bety$write)
+# write.to.db <- as.logical(settings$database$bety$write)
+write.to.db <- TRUE
     
 if (write.to.db){
         
@@ -100,37 +99,54 @@ if (write.to.db){
             con <- NULL
             PEcAn.logger::logger.warn("We were not able to successfully establish a connection with Bety ")
         }
-    } else { print("pass")}
+    } else { print("No need to write to DB")}
     
     
 # Get the workflow id
 if (!is.null(settings$workflow$id)) {
     
     workflow.id <- settings$workflow$id
+    print(paste0("workflow.id: ",workflow.id))
     
     } else {
         workflow.id <- -1
+        print("No workflow id found. Using -1")
     }
-#Second if this is a new fresh run ---------------------------------------------
 
-    if (is.null(restart)){
+
+# Second: if this is a new fresh run -------------------------------------------
+
+defaults <- settings$pfts
+
+## db pft ----------------------------------------------------------------------
+if (is.null(restart)){
+        
         # create an ensemble id
         if (!is.null(con) && write.to.db) {
+            
             # write ensemble first
             ensemble.id <- PEcAn.DB::db.query(paste0(
                 "INSERT INTO ensembles (runtype, workflow_id) ",
                 "VALUES ('ensemble', ", format(workflow.id, scientific = FALSE), ")",
                 "RETURNING id"), con = con)[['id']]
             
+            # ERROR Return no data
             for (pft in defaults) {
-                PEcAn.DB::db.query(paste0(
-                    "INSERT INTO posteriors_ensembles (posterior_id, ensemble_id) ",
-                    "values (", pft$posteriorid, ", ", ensemble.id, ")"), con = con)
+                 a <- PEcAn.DB::db.query(paste0(
+                     "INSERT INTO posteriors_ensembles (posterior_id, ensemble_id) ",
+                     "values (", pft$posteriorid, ", ", ensemble.id, ")"),
+                     con = con)
             }
+            print(a)
+            
         } else {
             ensemble.id <- NA
+            print("NO")
         }
-        #-------------------------generating met/param/soil/veg/... for all ensumbles----
+} # Delete 
+
+## Generating met/param/soil/veg/... for all ensembles -------------------------
+
         if (!is.null(con)){
             #-- lets first find out what tags are required for this model
             required_tags <- dplyr::tbl(con, 'models') %>%
