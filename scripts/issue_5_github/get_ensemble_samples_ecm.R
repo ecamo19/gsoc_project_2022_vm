@@ -9,7 +9,7 @@ rm(list = ls())
 # Load settings and .RData -----------------------------------------------------
 source("~/gsoc_project_2022/scripts/load_settings.R")
 
-load("./pecan_runs/pecan_run_salix/samples.Rdata")
+load("./pecan_runs/pecan_run_salix/my_samples.Rdata")
 load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
 
 # Function parameters ----------------------------------------------------------
