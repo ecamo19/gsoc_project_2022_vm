@@ -47,7 +47,7 @@ settings$pfts$pft$outdir <- file.path(settings$outdir, 'pft',
                                             settings$pfts$pft$name)
 
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
-settings$ensemble$ensemble.id <- 666
+#settings$ensemble$ensemble.id <- 666
 
 # PEcAn Workflow ---------------------------------------------------------------
 settings <- PEcAn.settings::prepare.settings(settings, force = FALSE)
