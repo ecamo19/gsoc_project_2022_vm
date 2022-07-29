@@ -326,7 +326,7 @@ save(ensemble.samples, trait.samples, sa.samples, runs.samples, env.samples,
          file = file.path(settings$outdir, "my_samples.Rdata"))
 
 if(exists("samples") & exists(c("ensemble.samples", "trait.samples", "sa.samples", "runs.samples"))){
-  cat(blue(paste0("\n Samples stored in samples.Rdata file:\n ensemble.samples,\n trait.samples,\n sa.samples,\n runs.samples ")))} 
+  cat(blue(paste0("\n Samples stored in my_samples.Rdata file:\n ensemble.samples,\n trait.samples,\n sa.samples,\n runs.samples ")))} 
 
 
 # End --------------------------------------------------------------------------
