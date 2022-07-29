@@ -7,9 +7,13 @@
       <password>bety</password>
       <host>postgres</host>
       <dbname>bety</dbname>
-      <write>FALSE</write>
+      <write>TRUE</write>
     </bety>
   </database>
+  
+  <workflow>
+    <id>1000019857</id>
+  </workflow>
 
   <pfts>
     <pft>
@@ -56,6 +60,7 @@
 
   <model>
     <type>BIOCRO</type>
+    <id>12</id>
   <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
     <revision>0.95</revision>
   </model>
