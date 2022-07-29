@@ -7,7 +7,7 @@
       <password>bety</password>
       <host>postgres</host>
       <dbname>bety</dbname>
-      <write>FALSE</write>
+      <write>TRUE</write>
     </bety>
   </database>
 
