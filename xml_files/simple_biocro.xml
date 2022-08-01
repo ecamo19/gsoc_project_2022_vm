@@ -22,11 +22,10 @@
   </pfts>
 
   <ensemble>
-      <size>100</size>
+      <size>10</size>
       <variable>AbvGrndWood</variable>
   
       <samplingspace>
-      
           <met>
               <method>sampling</method>
           </met>
@@ -60,7 +59,7 @@
 
   <model>
     <type>BIOCRO</type>
-    <id>12</id>
+    <id>7</id>
   <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
     <revision>0.95</revision>
   </model>
@@ -69,11 +68,13 @@
     <site>
       <id>753</id>
     </site>
+    
     <inputs>
       <met>
         <output>BIOCRO</output>
         <path>~/gsoc_project_2022/data/US-Bo1</path>
       </met>
+    
     </inputs>
       <start.date>2004/01/01</start.date>
       <end.date>2004/12/30</end.date>
