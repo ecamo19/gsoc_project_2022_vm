@@ -6,7 +6,7 @@ getwd()
 rm(list = ls())
 
 # Load settings ----------------------------------------------------------------
-source("~/gsoc_project_2022/scripts/load_settings.R")
+source("~/gsoc_project_2022/scripts/load_configs_settings.R")
 
 # Get general info: extract pft names ------------------------------------------
 
