@@ -56,11 +56,12 @@ source("~/gsoc_project_2022/scripts/load_settings.R")
 # Not sure if these are necessary 
 load("./pecan_runs/pecan_run_salix/samples.Rdata")
 load("./pecan_runs/pecan_run_salix/pft/salix/trait.data.Rdata")
+load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
+
+
 
 # Specifying parameters --------------------------------------------------------
 
-# Not sure about this parameter
-load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
 defaults <- settings$pfts
 
 model <- settings$model$type
@@ -78,12 +79,12 @@ restart <- NULL
 
 (my.write.config <- paste("write.config.", model, sep = ""))
 
-(my.write_restart <- paste0("write_restart.", model))
+#(my.write_restart <- paste0("write_restart.", model))
     
 if (is.null(ensemble.samples)) {
         return(list(runs = NULL, ensemble.id = NULL))
 
-    } else {print("Ensemble samples not null")}
+    } else {print("Ensemble samples NOT null")}
     
 # See if we need to write to DB
 # write.to.db <- as.logical(settings$database$bety$write)
@@ -129,9 +130,9 @@ if (is.null(restart)){ # closes at line 372
                 "VALUES ('ensemble', ", format(workflow.id, scientific = FALSE), ")",
                 "RETURNING id"), con = con)[['id']]
             
-            # ERROR Return no data
+            # ERROR!!! Return no data
             for (pft in defaults) {
-                 a <- PEcAn.DB::db.query(paste0(
+                  a <- PEcAn.DB::db.query(paste0(
                      "INSERT INTO posteriors_ensembles (posterior_id, ensemble_id) ",
                      "values (", pft$posteriorid, ", ", ensemble.id, ")"),
                      con = con)
@@ -142,6 +143,7 @@ if (is.null(restart)){ # closes at line 372
             print("NO")
         }
 #} # Delete!!!!!
+
 
 ## Generating met/param/soil/veg/... for all ensembles -------------------------
 
@@ -180,7 +182,7 @@ if (!is.null(con)){
         samp.ordered <- samp[c(order, names(samp)[!(names(samp) %in% order)])]
         
         # performing the sampling
-        samples<-list()
+        samples <- list()
         
         # For the tags specified in the xml I do the sampling
         for(i in seq_along(samp.ordered)){
@@ -188,7 +190,7 @@ if (!is.null(con)){
                 # do I have a parent ?
                 myparent <- samp.ordered[[i]]$parent 
                 
-                #call the function responsible for generating the ensemble
+                # call the function responsible for generating the ensemble
                 samples[[names(samp.ordered[i])]] <- input.ens.gen(settings = settings,
                                                                input = names(samp.ordered)[i],
                                                                method = samp.ordered[[i]]$method,
@@ -214,9 +216,14 @@ if (!is.null(con)){
         # Let's find the PFT based on site location, if it was found I will 
         # subset the ensemble.samples otherwise we're not affecting anything    
         
+        # HERE!!! Warning Warning message: Unknown or uninitialised 
+        # column: `name`. 
+        
         if(!is.null(con)){
             
             Pft_Site_df <- 
+                
+                # HERE!!! This returns a tibble: 0 x 0
                 dplyr::tbl(con, "sites_cultivars") %>%
                 
                 dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
@@ -229,6 +236,8 @@ if (!is.null(con)){
                 
                 dplyr::collect() 
             
+            # HERE !!! Warning message: Unknown or uninitialised column: `name`
+            # CHANGE SITE IN XML?
             site_pfts_names <- Pft_Site_df$name %>% unlist() %>% as.character()
             
             PEcAn.logger::logger.info(paste("The most suitable pfts for your 
@@ -240,23 +249,25 @@ if (!is.null(con)){
         }
         
         # Reading the site.pft specific tags from xml
+        # HERE!! Return character(0)
         site.pfts.vec <- settings$run$site$site.pft %>% unlist %>% as.character
         
         if (!is.null(site.pfts.vec)) {
             
             # find the name of pfts defined in the body of pecan.xml
-            defined.pfts <-
-                settings$pfts %>% purrr::map('name') %>% unlist %>% as.character
+            defined.pfts <- settings$pfts %>% 
+                                purrr::map('name') %>% 
+                                unlist %>% as.character
             
             # subset ensemble samples based on the pfts that are specified in 
             # the site and they are also sampled from.
             if (length(which(site.pfts.vec %in% defined.pfts)) > 0)
                 ensemble.samples <-
-                    ensemble.samples [site.pfts.vec[which(site.pfts.vec %in% defined.pfts)]]
+                    ensemble.samples[site.pfts.vec[which(site.pfts.vec %in% defined.pfts)]]
             
             # warn if there is a pft specified in the site but it's not defined 
             # in the pecan xml.
-            if (length(which(!(site.pfts.vec %in% defined.pfts))) > 0)
+            if(length(which(!(site.pfts.vec %in% defined.pfts))) > 0)
                 PEcAn.logger::logger.warn(
                     paste0(
                         
@@ -273,11 +284,14 @@ if (!is.null(con)){
         # if no ensemble piece was in the xml I replicate n times the first 
         # element in params
         
-        if (is.null(samp$parameters))            
-            samples$parameters$samples <- ensemble.samples %>% purrr::map(~.x[rep(1, settings$ensemble$size) , ])
+        if(is.null(samp$parameters))            
+            samples$parameters$samples <- ensemble.samples %>% 
+                                            purrr::map(~.x[rep(1, settings$ensemble$size) , ])
         
-        # This where we handle the parameters - ensemble.samples is already generated in run.write.config and it's sent to this function as arg - 
-        if ( is.null(samples$parameters$samples)) 
+        # This where we handle the parameters - ensemble.samples is already 
+        # generated in run.write.config and it's sent to this function as arg - 
+        
+        if(is.null(samples$parameters$samples)) 
             samples$parameters$samples <- ensemble.samples
         
         # End of generating ensembles 
@@ -375,7 +389,7 @@ if (!is.null(con)){
         run.id<-restart$runid
         new.params<-restart$new.params
         new.state<-restart$new.state
-        ensemble.id<-restart$ensemble.id
+    ensemble.id<-restart$ensemble.id
         
         # Reading the site.pft specific tags from xml
         site.pfts.vec <- settings$run$site$site.pft %>% unlist %>% as.character
