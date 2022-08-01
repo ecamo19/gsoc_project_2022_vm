@@ -52,6 +52,7 @@ library(BioCro)
 # Load setting and data --------------------------------------------------------
 source("~/gsoc_project_2022/scripts/issue_5_github/get_ensemble_samples_ecm.R")
 source("~/gsoc_project_2022/scripts/load_settings.R")
+source("~/gsoc_project_2022/R/write.config.BIOCRO.R")
 
 # Not sure if these are necessary 
 load("./pecan_runs/pecan_run_salix/samples.Rdata")
