@@ -40,9 +40,14 @@
 #                                   clean = FALSE, write.to.db = TRUE,
 #                                   restart=NULL) {
 
+rm(list = ls())
+
 # Load packages ----------------------------------------------------------------
 library(rlang)
 library(dplyr)
+library(PEcAn.all)
+library(BioCro)
+
 
 # Load setting and data --------------------------------------------------------
 source("~/gsoc_project_2022/scripts/issue_5_github/get_ensemble_samples_ecm.R")
@@ -55,7 +60,8 @@ load("./pecan_runs/pecan_run_salix/pft/salix/trait.data.Rdata")
 # Specifying parameters --------------------------------------------------------
 
 # Not sure about this parameter
-defaults <- load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
+load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
+defaults <- settings$pfts
 
 model <- settings$model$type
 
@@ -67,11 +73,6 @@ clean <-  FALSE
 
 restart <- NULL
 
-# Open database connection for section 2
-con <- try(PEcAn.DB::db.open(settings$database$bety))
-#on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
-
-write.to.db <- TRUE
 
 # First: General configuration, db, workflow id --------------------------------
 
@@ -82,7 +83,7 @@ write.to.db <- TRUE
 if (is.null(ensemble.samples)) {
         return(list(runs = NULL, ensemble.id = NULL))
 
-    } else {print("not null")}
+    } else {print("Ensemble samples not null")}
     
 # See if we need to write to DB
 # write.to.db <- as.logical(settings$database$bety$write)
@@ -99,7 +100,7 @@ if (write.to.db){
             con <- NULL
             PEcAn.logger::logger.warn("We were not able to successfully establish a connection with Bety ")
         }
-    } else { print("No need to write to DB")}
+    } else {print("No need to write to DB")}
     
     
 # Get the workflow id
@@ -116,10 +117,8 @@ if (!is.null(settings$workflow$id)) {
 
 # Second: if this is a new fresh run -------------------------------------------
 
-defaults <- settings$pfts
-
 ## db pft ----------------------------------------------------------------------
-if (is.null(restart)){
+if (is.null(restart)){ # closes at line 372
         
         # create an ensemble id
         if (!is.null(con) && write.to.db) {
@@ -137,90 +136,133 @@ if (is.null(restart)){
                      "values (", pft$posteriorid, ", ", ensemble.id, ")"),
                      con = con)
             }
-            print(a)
             
         } else {
             ensemble.id <- NA
             print("NO")
         }
-} # Delete 
+#} # Delete!!!!!
 
 ## Generating met/param/soil/veg/... for all ensembles -------------------------
 
-        if (!is.null(con)){
-            #-- lets first find out what tags are required for this model
-            required_tags <- dplyr::tbl(con, 'models') %>%
-                dplyr::filter(.data$id == !!as.numeric(settings$model$id)) %>%
-                dplyr::inner_join(dplyr::tbl(con, "modeltypes_formats"), by = c('modeltype_id')) %>%
-                dplyr::collect() %>%
-                dplyr::filter(.data$required == TRUE) %>%
-                dplyr::pull(.data$tag)
-            
-        }else{
+if (!is.null(con)){
+    
+    # lets first find out what tags are required for this model
+    required_tags <- 
+        
+        # 
+        dplyr::tbl(con, 'models') %>%
+        dplyr::filter(.data$id == !!as.numeric(settings$model$id)) %>%
+        dplyr::inner_join(dplyr::tbl(con, "modeltypes_formats"), 
+                          by = c('modeltype_id')) %>%
+        
+        dplyr::collect() %>%
+        dplyr::filter(.data$required == TRUE) %>%
+        dplyr::pull(.data$tag)
+    
+        print(required_tags)
+        
+        } else{
             required_tags<-c("met","parameters")
             
         }
         
-        #now looking into the xml
+        # now looking into the xml
         samp <- settings$ensemble$samplingspace
-        #finding who has a parent
+        
+        # finding who has a parent
         parents <- lapply(samp,'[[', 'parent')
-        #order parents based on the need of who has to be first
+        
+        # order parents based on the need of who has to be first
         order <- names(samp)[lapply(parents, function(tr) which(names(samp) %in% tr)) %>% unlist()] 
-        #new ordered sampling space
+        
+        # new ordered sampling space
         samp.ordered <- samp[c(order, names(samp)[!(names(samp) %in% order)])]
-        #performing the sampling
+        
+        # performing the sampling
         samples<-list()
+        
         # For the tags specified in the xml I do the sampling
         for(i in seq_along(samp.ordered)){
-            myparent<-samp.ordered[[i]]$parent # do I have a parent ?
-            #call the function responsible for generating the ensemble
-            samples[[names(samp.ordered[i])]] <- input.ens.gen(settings=settings,
-                                                               input=names(samp.ordered)[i],
-                                                               method=samp.ordered[[i]]$method,
-                                                               parent_ids=if( !is.null(myparent)) samples[[myparent]] # if I have parent then give me their ids - this is where the ordering matters making sure the parent is done before it's asked
+        
+                # do I have a parent ?
+                myparent <- samp.ordered[[i]]$parent 
+                
+                #call the function responsible for generating the ensemble
+                samples[[names(samp.ordered[i])]] <- input.ens.gen(settings = settings,
+                                                               input = names(samp.ordered)[i],
+                                                               method = samp.ordered[[i]]$method,
+                                                               
+                                                               # if I have parent then give me their ids - 
+                                                               # this is where the ordering matters making 
+                                                               # sure the parent is done before it's asked
+                                                               parent_ids = if( !is.null(myparent)) samples[[myparent]] 
             )
         }
         
-        # if there is a tag required by the model but it is not specified in the xml then I replicate n times the first element 
-        required_tags%>%
+        # if there is a tag required by the model but it is not specified in the 
+        # xml then I replicate n times the first element 
+        required_tags %>%
             purrr::walk(function(r_tag){
-                if (is.null(samples[[r_tag]]) & r_tag!="parameters") samples[[r_tag]]$samples <<- rep(settings$run$inputs[[tolower(r_tag)]]$path[1], settings$ensemble$size)
+                if (is.null(samples[[r_tag]]) & 
+                    r_tag!="parameters") samples[[r_tag]]$samples <<- 
+                        rep(settings$run$inputs[[tolower(r_tag)]]$path[1],
+                            settings$ensemble$size)
             })
         
         
-        # Let's find the PFT based on site location, if it was found I will subset the ensemble.samples otherwise we're not affecting anything    
+        # Let's find the PFT based on site location, if it was found I will 
+        # subset the ensemble.samples otherwise we're not affecting anything    
+        
         if(!is.null(con)){
-            Pft_Site_df <- dplyr::tbl(con, "sites_cultivars")%>%
+            
+            Pft_Site_df <- 
+                dplyr::tbl(con, "sites_cultivars") %>%
+                
                 dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
-                dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), by = "cultivar_id") %>%
-                dplyr::inner_join(dplyr::tbl(con, "pfts"), by = c("pft_id" = "id")) %>%
+                
+                dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), 
+                                  by = "cultivar_id") %>%
+                
+                dplyr::inner_join(dplyr::tbl(con, "pfts"), 
+                                  by = c("pft_id" = "id")) %>%
+                
                 dplyr::collect() 
             
             site_pfts_names <- Pft_Site_df$name %>% unlist() %>% as.character()
             
-            PEcAn.logger::logger.info(paste("The most suitable pfts for your site are the followings:",site_pfts_names))
+            PEcAn.logger::logger.info(paste("The most suitable pfts for your 
+                                            site are the followings:", site_pfts_names))
+            
             #-- if there is enough info to connect the site to pft
-            #if ( nrow(Pft_Site_df) > 0 & all(site_pfts_names %in% names(ensemble.samples)) ) ensemble.samples <- ensemble.samples [Pft_Site$name %>% unlist() %>% as.character()]
+            #if ( nrow(Pft_Site_df) > 0 & all(site_pfts_names %in% names(ensemble.samples)) ) 
+            #ensemble.samples <- ensemble.samples [Pft_Site$name %>% unlist() %>% as.character()]
         }
         
         # Reading the site.pft specific tags from xml
         site.pfts.vec <- settings$run$site$site.pft %>% unlist %>% as.character
         
         if (!is.null(site.pfts.vec)) {
+            
             # find the name of pfts defined in the body of pecan.xml
             defined.pfts <-
                 settings$pfts %>% purrr::map('name') %>% unlist %>% as.character
-            # subset ensemble samples based on the pfts that are specified in the site and they are also sampled from.
+            
+            # subset ensemble samples based on the pfts that are specified in 
+            # the site and they are also sampled from.
             if (length(which(site.pfts.vec %in% defined.pfts)) > 0)
                 ensemble.samples <-
                     ensemble.samples [site.pfts.vec[which(site.pfts.vec %in% defined.pfts)]]
-            # warn if there is a pft specified in the site but it's not defined in the pecan xml.
+            
+            # warn if there is a pft specified in the site but it's not defined 
+            # in the pecan xml.
             if (length(which(!(site.pfts.vec %in% defined.pfts))) > 0)
                 PEcAn.logger::logger.warn(
                     paste0(
+                        
                         "The following pfts are specified for the siteid ",
                         settings$run$site$id ,
+                        
                         " but they are not defined as a pft in pecan.xml:",
                         site.pfts.vec[which(!(site.pfts.vec %in% defined.pfts))],
                         collapse = ","
@@ -228,12 +270,19 @@ if (is.null(restart)){
                 )
         }
         
-        # if no ensemble piece was in the xml I replicate n times the first element in params
-        if ( is.null(samp$parameters) )            samples$parameters$samples <- ensemble.samples %>% purrr::map(~.x[rep(1, settings$ensemble$size) , ])
+        # if no ensemble piece was in the xml I replicate n times the first 
+        # element in params
+        
+        if (is.null(samp$parameters))            
+            samples$parameters$samples <- ensemble.samples %>% purrr::map(~.x[rep(1, settings$ensemble$size) , ])
+        
         # This where we handle the parameters - ensemble.samples is already generated in run.write.config and it's sent to this function as arg - 
-        if ( is.null(samples$parameters$samples) ) samples$parameters$samples <- ensemble.samples
-        #------------------------End of generating ensembles-----------------------------------
-        # find all inputs that have an id
+        if ( is.null(samples$parameters$samples)) 
+            samples$parameters$samples <- ensemble.samples
+        
+        # End of generating ensembles 
+        
+        # Find all inputs that have an id --------------------------------------
         inputs <- names(settings$run$inputs)
         inputs <- inputs[grepl(".id$", inputs)]
         
@@ -314,11 +363,13 @@ if (is.null(restart)){
             cat(format(run.id, scientific = FALSE), file = file.path(settings$rundir, "runs.txt"), sep = "\n", append = TRUE)
             
         }
+        
         return(invisible(list(runs = runs, ensemble.id = ensemble.id, samples=samples)))
         
         #------------------------------------------------- if we already have everything ------------------
                 
-    } else{  # The "}" previuos to "else {" opens at line 116
+    } else {  # The "}" previuos to "else {" opens at line 122
+        
         #reading retstart inputs
         inputs<-restart$inputs
         run.id<-restart$runid
