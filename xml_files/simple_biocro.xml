@@ -66,8 +66,12 @@
 
   <run>
     <site>
-      <id>753</id>
+      <id>288</id>
+      <name>Sapelo Island</name>
+      <lat>31.40</lat>
+      <lon>-81.37</lon>
     </site>
+
     
     <inputs>
       <met>
