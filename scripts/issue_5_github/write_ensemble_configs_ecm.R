@@ -190,7 +190,7 @@ restart <- NULL
         for(i in seq_along(samp.ordered)){
             
             # do I have a parent ?
-            myparent<-samp.ordered[[i]]$parent 
+            myparent <- samp.ordered[[i]]$parent 
             
             # call the function responsible for generating the ensemble
             
@@ -221,11 +221,18 @@ restart <- NULL
             
             ### First warning!!! -----------------------------------------------
             # Warning message: Unknown or uninitialised column: `name`. 
+            DBI::dbListTables(con)
+            dplyr::tbl(con)
+            dplyr::tbl(con, "sites_cultivars")  %>% 
+                colnames()
+                dplyr::filter(.data$id == 758)
+                
+            
             
             #Pft_Site_df <- 
-                
-                dplyr::tbl(con, "cultivars_pfts") %>%
-             #   dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
+                dplyr::tbl(con, "sites_cultivars") %>%
+                    dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
+                    colnames()
              #   dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), 
               #                    by = "cultivar_id") %>%
                 
