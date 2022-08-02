@@ -67,6 +67,10 @@ PEcAn.uncertainty::write.ensemble.configs(defaults = settings$pfts,
                                           settings = settings,
                                           model = settings$model)
 
+
+
+
+
 # Specifying parameters --------------------------------------------------------
 
 defaults <- settings$pfts
@@ -97,7 +101,7 @@ restart <- NULL
     # See if we need to write to DB
     write.to.db <- as.logical(settings$database$bety$write)
     
-    if (write.to.db) { #N3
+    if(write.to.db) { #N3
         # Open connection to database so we can store all run/ensemble information
         
             con <- try(PEcAn.DB::db.open(settings$database$bety))
@@ -218,16 +222,16 @@ restart <- NULL
             ### First warning!!! -----------------------------------------------
             # Warning message: Unknown or uninitialised column: `name`. 
             
-            Pft_Site_df <- 
+            #Pft_Site_df <- 
                 
-                dplyr::tbl(con, "sites_cultivars") %>%
-                dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
-                dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), 
-                                  by = "cultivar_id") %>%
+                dplyr::tbl(con, "cultivars_pfts") %>%
+             #   dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
+             #   dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), 
+              #                    by = "cultivar_id") %>%
                 
-                dplyr::inner_join(dplyr::tbl(con, "pfts"), 
+               # dplyr::inner_join(dplyr::tbl(con, "pfts"), 
                                   by = c("pft_id" = "id")) %>%
-                dplyr::collect()
+                # dplyr::collect()
             
             site_pfts_names <- Pft_Site_df$name %>% unlist() %>% as.character()
             
