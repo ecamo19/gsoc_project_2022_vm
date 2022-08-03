@@ -298,7 +298,7 @@ as.data.frame(ensemble.samples) %>%
   
 # Clean environment ------------------------------------------------------------
 rm(list=setdiff(ls(), "ensemble.samples"))
-cat(crayon::blue(paste0("Ensemble samples dataframe created")))
+cat(crayon::blue(paste0("\n Ensemble samples dataframe created \n")))
 
 
 # End --------------------------------------------------------------------------
