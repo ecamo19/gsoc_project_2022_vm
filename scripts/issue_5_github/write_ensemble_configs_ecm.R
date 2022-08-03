@@ -69,8 +69,6 @@ PEcAn.uncertainty::write.ensemble.configs(defaults = settings$pfts,
 
 
 
-
-
 # Specifying parameters --------------------------------------------------------
 
 defaults <- settings$pfts
@@ -122,11 +120,14 @@ restart <- NULL
         workflow.id <- -1
     }
     
-# New fresh run ------------------------------------------------------------    
+# New fresh run ----------------------------------------------------------------    
     if (is.null(restart)) {  #N4
+
+## Query db --------------------------------------------------------------------
         
         # create an ensemble id
         if (!is.null(con) && write.to.db) {
+            
             # write ensemble first
             ensemble.id <- PEcAn.DB::db.query(paste0(
                 "INSERT INTO ensembles (runtype, workflow_id) ",
@@ -136,12 +137,13 @@ restart <- NULL
             for (pft in defaults) {
                 PEcAn.DB::db.query(paste0(
                     "INSERT INTO posteriors_ensembles (posterior_id, ensemble_id) ",
-                    "values (", pft$posteriorid, ", ", ensemble.id, ")"), con = con)
-            }
-        } else {
-            ensemble.id <- NA
-        }
-     
+                    "values (", pft$posteriorid, ", ", ensemble.id, ")"), 
+                    con = con)
+                
+                }} else {
+                        ensemble.id <- NA
+                        }
+    
         # Generating met/param/soil/veg/... for all ensambles ------------------
         
         ## Find out what tags are required for the model -----------------------
@@ -149,21 +151,28 @@ restart <- NULL
             
             required_tags <- 
                 
-                dplyr::tbl(con, 'models') %>%
-                dplyr::filter(.data$id == !!as.numeric(settings$model$id)) %>%
                 
+                # Query models 
+                dplyr::tbl(con, 'models') %>% 
+                
+                # Get model id                  
+                dplyr::filter(.data$id == !!as.numeric(settings$model$id)) %>% 
+                
+                # Join, here you can see the tags
                 dplyr::inner_join(dplyr::tbl(con, "modeltypes_formats"), 
                                   by = c('modeltype_id')) %>%
+                
                 dplyr::collect() %>%
                 dplyr::filter(.data$required == TRUE) %>%
+                
+                # Get model tags that are required
                 dplyr::pull(.data$tag)
             
         } else{
             required_tags <- c("met","parameters")
-            
         }
         
-        ## Looking into the xml ------------------------------------------------
+        ## Looking into the xml sampling space----------------------------------
         
         samp <- settings$ensemble$samplingspace
         
@@ -187,6 +196,7 @@ restart <- NULL
         
         ### For the tags specified in the xml I do the sampling ----------------
         
+        # samples is an object with paths
         for(i in seq_along(samp.ordered)){
             
             # do I have a parent ?
@@ -227,18 +237,19 @@ restart <- NULL
                 colnames()
                 dplyr::filter(.data$id == 758)
                 
-            
-            
-            #Pft_Site_df <- 
+
+# Cultivar section -------------------------------------------------------------
+
+            Pft_Site_df <- 
                 dplyr::tbl(con, "sites_cultivars") %>%
                     dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
                     colnames()
-             #   dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), 
-              #                    by = "cultivar_id") %>%
+                dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), 
+                                  by = "cultivar_id") %>%
                 
-               # dplyr::inner_join(dplyr::tbl(con, "pfts"), 
+                dplyr::inner_join(dplyr::tbl(con, "pfts"), 
                                   by = c("pft_id" = "id")) %>%
-                # dplyr::collect()
+                 dplyr::collect()
             
             site_pfts_names <- Pft_Site_df$name %>% unlist() %>% as.character()
             
