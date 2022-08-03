@@ -166,7 +166,7 @@ if (method == "halton") {
                                  total.sample.num)
     }
 
-# This output, 
+# This is the output: 
 random.samples
 
 # Third: Get Ensemble Samples --------------------------------------------------
@@ -271,9 +271,9 @@ for (pft.i in seq(pft.samples)) {
 } # closes loop, First loop + Second loop # end pft
 
 # Check ensemble results
-print(ensemble.samples)
 
 names(ensemble.samples) <- names(pft.samples)
+ensemble.samples
 #ans <- ensemble.samples
 
 
@@ -284,8 +284,18 @@ names(ensemble.samples) <- names(pft.samples)
 
 #} # closes the function get.ensemble.samples
 
-ensemble.samples
 
+# Create dataframe -------------------------------------------------------------
+as.data.frame(ensemble.samples) %>% 
+  tibble::add_column(ensemble_number = seq(1,nrow(.))) %>% 
+  tidyr::pivot_longer(!ensemble_number, names_to = "input", 
+                      values_to = "value_sampled") %>%  
+  
+  # Find the last dot in the string and separate into two columns what is in the 
+  # left and in the right of that dot
+  tidyr::separate(input, into = c("input", "chain_number"), sep = "\\.(?=\\w+$)")
+
+  
 # Clean environment ------------------------------------------------------------
 rm(list=setdiff(ls(), "ensemble.samples"))
 cat(crayon::blue(paste0("Ensemble samples dataframe created")))
