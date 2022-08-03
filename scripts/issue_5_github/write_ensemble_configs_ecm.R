@@ -144,9 +144,9 @@ restart <- NULL
                         ensemble.id <- NA
                         }
     
-        # Generating met/param/soil/veg/... for all ensambles ------------------
+        ## Generating met/param/soil/veg/... for all ensambles -----------------
         
-        ## Find out what tags are required for the model -----------------------
+        ### Find out what tags are required for the model ----------------------
         if (!is.null(con)){
             
             required_tags <- 
@@ -172,25 +172,25 @@ restart <- NULL
             required_tags <- c("met","parameters")
         }
         
-        ## Looking into the xml sampling space----------------------------------
+        ### Looking into the xml sampling space---------------------------------
         
         samp <- settings$ensemble$samplingspace
         
-        ## Finding who has a parent --------------------------------------------
+        ### Finding who has a parent -------------------------------------------
 
         parents <- lapply(samp,'[[', 'parent')
         
         
-        ## Order parents based on the need of who has to be first --------------
+        ### Order parents based on the need of who has to be first -------------
         
         order <- names(samp)[lapply(parents, function(tr) which(names(samp) %in% tr)) 
                              %>% unlist()] 
         
-        ## New ordered sampling space ------------------------------------------
+        ### New ordered sampling space -----------------------------------------
         
         samp.ordered <- samp[c(order, names(samp)[!(names(samp) %in% order)])]
         
-        ## Performing the sampling ---------------------------------------------
+        ### Performing the sampling --------------------------------------------
         
         samples <- list()
         
@@ -217,45 +217,46 @@ restart <- NULL
         
         # if there is a tag required by the model but it is not specified in 
         # the xml then I replicate n times the first element 
+        # "<<-" scoping assignment
         required_tags %>%
             purrr::walk(function(r_tag){
-                if (is.null(samples[[r_tag]]) & r_tag!="parameters") samples[[r_tag]]$samples <<- rep(settings$run$inputs[[tolower(r_tag)]]$path[1], settings$ensemble$size)
+                
+                if(is.null(samples[[r_tag]]) & r_tag!="parameters") 
+                    
+                    samples[[r_tag]]$samples <<- rep(settings$run$inputs[[tolower(r_tag)]]$path[1], 
+                                                     settings$ensemble$size)
             })
         
-        ## Find the PFT based on site location ---------------------------------
+        ### Find the PFT based on site location --------------------------------
          
         ## If it was found I will subset the ensemble.samples otherwise 
         ## we're not affecting anything    
         
         if(!is.null(con)){
             
-            ### First warning!!! -----------------------------------------------
-            # Warning message: Unknown or uninitialised column: `name`. 
-            DBI::dbListTables(con)
-            dplyr::tbl(con)
-            dplyr::tbl(con, "sites_cultivars")  %>% 
-                colnames()
-                dplyr::filter(.data$id == 758)
-                
-
 # Cultivar section -------------------------------------------------------------
 
             Pft_Site_df <- 
-                dplyr::tbl(con, "sites_cultivars") %>%
-                    dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
-                    colnames()
-                dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), 
-                                  by = "cultivar_id") %>%
+                Pft_Site_df <- dplyr::tbl(con, "sites_cultivars")%>%
+                                    dplyr::filter(.data$site_id == !!settings$run$site$id) %>%
                 
-                dplyr::inner_join(dplyr::tbl(con, "pfts"), 
-                                  by = c("pft_id" = "id")) %>%
-                 dplyr::collect()
+                                    dplyr::inner_join(dplyr::tbl(con, "cultivars_pfts"), 
+                                                      by = "cultivar_id") %>%
+                
+                                    dplyr::inner_join(dplyr::tbl(con, "pfts"), 
+                                                      by = c("pft_id" = "id")) %>%
+                                dplyr::collect() 
             
             site_pfts_names <- Pft_Site_df$name %>% unlist() %>% as.character()
             
             PEcAn.logger::logger.info(paste("The most suitable pfts for your site are the followings:",site_pfts_names))
+            
+            ### Uncomment section ----------------------------------------------
             #-- if there is enough info to connect the site to pft
-            #if ( nrow(Pft_Site_df) > 0 & all(site_pfts_names %in% names(ensemble.samples)) ) ensemble.samples <- ensemble.samples [Pft_Site$name %>% unlist() %>% as.character()]
+            if(nrow(Pft_Site_df) > 0 & all(site_pfts_names %in% names(ensemble.samples))) 
+                
+                # Pft_Site object not found using Pft_Site_df
+                ensemble.samples <- ensemble.samples[Pft_Site_df$name %>% unlist() %>% as.character()]
         }
         
     #} # delete
