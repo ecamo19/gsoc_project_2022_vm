@@ -76,7 +76,7 @@
     <inputs>
       <met>
         <output>BIOCRO</output>
-        <path>~/gsoc_project_2022/data/US-Bo1</path>
+        <path>~/gsoc_project_2022/data/US-Bo1.csv</path>
       </met>
     
     </inputs>
