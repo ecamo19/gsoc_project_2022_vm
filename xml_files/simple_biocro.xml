@@ -9,6 +9,7 @@
       <dbname>bety</dbname>
       <write>TRUE</write>
     </bety>
+    <dbfiles>/home/carya/gsoc_project_2022/pecan_runs/pecan_run_salix/dbfiles</dbfiles>
   </database>
   
   <workflow>
