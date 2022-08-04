@@ -58,7 +58,7 @@
   </sensitivity.analysis>
 
   <model>
-    <type>BIOCRO</type>
+    <type>BioCro</type>
     <id>7</id>
   <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
     <revision>0.95</revision>
@@ -74,7 +74,7 @@
     
     <inputs>
       <met>
-        <output>BioCro</output>
+        <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/BioCro</output>
         <path>~/gsoc_project_2022/data/US-Bo1</path>
       </met>
     
