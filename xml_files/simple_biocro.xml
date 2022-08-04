@@ -73,7 +73,7 @@
 
     <inputs>
       <met>
-        <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/BioCro</output>
+        <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run</output>
         <path>~/gsoc_project_2022/data/US-Bo1</path>
       </met>
     </inputs>
