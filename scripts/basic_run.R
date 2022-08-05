@@ -33,7 +33,7 @@ settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/simple_
 # Configure settings -----------------------------------------------------------
 
 # Get date
-path <- paste0('./gsoc_project_2022/pecan_runs/pecan_run_salix')
+path <- paste0('gsoc_project_2022/pecan_runs/pecan_run_salix')
 
 # Set output dir
 settings$outdir <- file.path(path)
@@ -47,6 +47,8 @@ settings$pfts$pft$outdir <- file.path(settings$outdir, 'pft',
                                             settings$pfts$pft$name)
 
 settings$ensemble$samplingspace$parameters$method <- 'lhc'
+#settings$host$name <- "localhost"
+
 #settings$ensemble$ensemble.id <- 666
 
 # PEcAn Workflow ---------------------------------------------------------------
