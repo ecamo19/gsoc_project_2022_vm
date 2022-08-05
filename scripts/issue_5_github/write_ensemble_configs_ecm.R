@@ -41,6 +41,11 @@
 
 rm(list = ls())
 
+# Working directory ------------------------------------------------------------
+setwd('/home/carya')
+getwd()
+
+
 # Load packages ----------------------------------------------------------------
 library(rlang)
 library(dplyr)
