@@ -65,6 +65,7 @@
   </model>
 
   <run>
+    <id>99000002926</id>
     <site>
       <id>288</id>
       <lat>31.40</lat>
@@ -78,15 +79,15 @@
       </met>
     </inputs>
     
-    <!-- One way to add multiple inputs -->  
-     <!--inputs>
-      <!--met>/data/sites/MERRA_ED2_site_1-42/ED_MET_DRIVER_HEADER</met>
-      <!--veg>/data/oge2OLD/OGE2_</veg>
-      <!--soil>/data/faoOLD/FAO_</soil>
-      <!--lu>/data/ed_inputs/glu/</lu>
-      <!--thsum>/data/ed_inputs/</thsum>
+    <!-- One way to add multiple inputs
+     <inputs>
+      <met>/data/sites/MERRA_ED2_site_1-42/ED_MET_DRIVER_HEADER</met>
+      <veg>/data/oge2OLD/OGE2_</veg>
+      <soil>/data/faoOLD/FAO_</soil>
+      <lu>/data/ed_inputs/glu/</lu>
+      <thsum>/data/ed_inputs/</thsum>
     </inputs>
-    
+    -->
     
     
     
