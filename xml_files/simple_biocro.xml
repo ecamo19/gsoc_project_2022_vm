@@ -68,8 +68,7 @@
     <site>
       <id>288</id>
       <lat>31.40</lat>
-      <lon>-81.28</lon>
-      <met>~/gsoc_project_2022/data/US-Bo1/weather.csv</met>
+      <lon>-81.37</lon>
     </site>
 
     <inputs>
