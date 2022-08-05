@@ -384,10 +384,12 @@ runs <- data.frame()
                                                                function(x, n) { x[n, , drop=FALSE] }, n=i), # this is the params
                                          settings = settings, 
                                          run.id = run.id))
-    cat(format(run.id, scientific = FALSE), file = file.path(settings$rundir, "runs.txt"), sep = "\n", append = TRUE)
+    cat(format(run.id, scientific = FALSE), file = file.path(settings$rundir, "test_runs.txt"), sep = "\n", append = TRUE)
     
     }
- return(invisible(list(runs = runs, ensemble.id = ensemble.id, samples=samples)))
+ #return(invisible(
+     list(runs = runs, ensemble.id = ensemble.id, samples = samples)
+     #))
 } 
         
  
