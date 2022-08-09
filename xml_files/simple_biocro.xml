@@ -23,7 +23,7 @@
   </pfts>
 
   <ensemble>
-      <size>10</size>
+      <size>5</size>
       <variable>AbvGrndWood</variable>
   
       <samplingspace>
@@ -72,6 +72,7 @@
       <lon>-81.37</lon>
     </site>
 
+      <!met/path – Path to file containing meteorological data>
     <inputs>
       <met>
         <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run</output>
@@ -100,4 +101,3 @@
       
   </run>
 </pecan>
-
