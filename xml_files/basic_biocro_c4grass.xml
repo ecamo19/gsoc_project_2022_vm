@@ -71,13 +71,14 @@
       <output>~/gsoc_project_2022/pecan_runs/c4grass/run</output>
       
       <met> 
-        <id>299</id>
+         <output>BIOCRO</output>
+         <path>./gsoc_project_2022/data/weather.csv</path>
       </met>
       
       <soil>
         <id>303</id>
-      </soil>
-    </inputs>
+      </soil> 
+    </inputs> 
     
     <host>
         <name>localhost</name>
