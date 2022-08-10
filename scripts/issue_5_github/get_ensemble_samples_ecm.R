@@ -7,10 +7,9 @@ getwd()
 rm(list = ls())
 
 # Load settings and .RData -----------------------------------------------------
-source("~/gsoc_project_2022/scripts/load_settings.R")
-source("~/gsoc_project_2022/scripts/issue_5_github/get_parameter_samples_ecm.R")
+source("~/gsoc_project_2022/scripts/load_configs_settings.R")
 
-load("./pecan_runs/pecan_run_salix/samples.Rdata")
+load("./pecan_runs/pecan_run_salix/my_samples.Rdata")
 load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
 
 # Function parameters ----------------------------------------------------------
@@ -167,7 +166,7 @@ if (method == "halton") {
                                  total.sample.num)
     }
 
-# This output, 
+# This is the output: 
 random.samples
 
 # Third: Get Ensemble Samples --------------------------------------------------
@@ -266,25 +265,43 @@ for (pft.i in seq(pft.samples)) {
   # Convert matrix to data frame
   ensemble.samples[[pft.i]] <- as.data.frame(ensemble.samples[[pft.i]])
   
-  # Colnames to each column
+# Colnames to each column
   colnames(ensemble.samples[[pft.i]]) <- names(pft.samples[[pft.i]])
   
 } # closes loop, First loop + Second loop # end pft
 
 # Check ensemble results
-print(ensemble.samples)
 
 names(ensemble.samples) <- names(pft.samples)
-ans <- ensemble.samples
+ensemble.samples
+#ans <- ensemble.samples
+
 
 #} # the closes the else in line 83
 
 #return(ans)
-ans
+#ans
 
 #} # closes the function get.ensemble.samples
 
 
+# Create dataframe -------------------------------------------------------------
+as.data.frame(ensemble.samples) %>% 
+  tibble::add_column(ensemble_number = seq(1,nrow(.))) %>% 
+  tidyr::pivot_longer(!ensemble_number, names_to = "input", 
+                      values_to = "value_sampled") %>%  
+  
+  # Find the last dot in the string and separate into two columns what is in the 
+  # left and in the right of that dot
+  tidyr::separate(input, into = c("input", "chain_number"), sep = "\\.(?=\\w+$)")
+
+  
+# Clean environment ------------------------------------------------------------
+rm(list=setdiff(ls(), "ensemble.samples"))
+cat(crayon::blue(paste0("\n Ensemble samples dataframe created \n")))
+
+
+# End --------------------------------------------------------------------------
 
 
 

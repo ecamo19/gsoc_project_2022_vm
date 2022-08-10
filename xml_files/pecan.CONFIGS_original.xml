@@ -82,7 +82,7 @@
   <jobtemplate>/projectnb/dietzelab/ahelgeso/sipnet_geo.job</jobtemplate>
  </model>
  <run>
-  <modeloutdir>/projectnb/dietzelab/ahelgeso/Site_Outputs/Harvard</modeloutdir>
+  <outdir>/projectnb/dietzelab/ahelgeso/Site_Outputs/Harvard</outdir>
   <site>
    <id>646</id>
    <met.start>2021-06-26</met.start>

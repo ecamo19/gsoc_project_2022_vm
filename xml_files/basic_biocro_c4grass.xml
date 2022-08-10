@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<!--xml from https://github.com/PecanProject/pecan/blob/develop/models/biocro/inst/extdata/c4grass.xml -->
+
+<pecan>
+  <database>
+    <bety>
+      <driver>PostgreSQL</driver>
+      <user>bety</user>
+      <password>bety</password>
+      <host>postgres</host>
+      <dbname>bety</dbname>
+      <write>TRUE</write>
+    </bety>
+    <dbfiles>~/gsoc_project_2022/pecan_runs/c4grass/dbfiles</dbfiles>
+  </database>
+  
+  <workflow>
+    <id>1000019867</id>
+  </workflow>
+  
+  <pfts>
+    <pft>
+      <name>sorghum</name>
+    </pft>
+  </pfts>
+  
+  <ensemble>
+    <ensemble.id>1000033790</ensemble.id>
+    <size>5</size>
+    <variable>StemBiom</variable>
+  </ensemble>
+  
+  <meta.analysis>
+    <iter>3000</iter>
+    <random.effects>FALSE</random.effects>
+    <threshold>1.2</threshold>
+    <update>AUTO</update>
+  </meta.analysis>
+  
+  <sensitivity.analysis>
+    <!--<quantiles>
+      <sigma>1</sigma>
+      <sigma>0</sigma>
+      <sigma>-1</sigma>
+    </quantiles>-->
+    <variable>StemBiom</variable>
+    <start.year>2004</start.year>
+    <end.year>2004</end.year>
+  </sensitivity.analysis>
+  
+  <model>
+    <id>7</id>
+    <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
+    <revision>0.95</revision>
+  </model>
+  
+  
+  <run>
+    <id>99000002936</id>
+    
+    <site>
+      <id>76</id>
+
+    </site>
+    
+    <start.date>2004-01-01 06:00:00</start.date>
+    <end.date>2004-12-31 05:59:00</end.date>
+    
+    <inputs>
+      <output>~/gsoc_project_2022/pecan_runs/c4grass/run</output>
+      
+      <met> 
+         <output>BIOCRO</output>
+         <path>./gsoc_project_2022/data/weather.csv</path>
+      </met>
+      
+      <soil>
+        <id>303</id>
+      </soil> 
+    </inputs> 
+    
+    <host>
+        <name>localhost</name>
+    </host>
+  </run>
+  
+</pecan>

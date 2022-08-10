@@ -6,7 +6,7 @@ getwd()
 rm(list = ls())
 
 # Load settings ----------------------------------------------------------------
-source("~/gsoc_project_2022/scripts/load_settings.R")
+source("~/gsoc_project_2022/scripts/load_configs_settings.R")
 
 # Get general info: extract pft names ------------------------------------------
 
@@ -14,7 +14,8 @@ source("~/gsoc_project_2022/scripts/load_settings.R")
 # sensitivity  analysis (e.g. post.distns.Rdata, or prior.distns.Rdata)
 
 #get.parameter.samples <- function(settings, 
-#                                  posterior.files = rep(NA, length(settings$pfts)), 
+#                                  posterior.files = rep(NA, 
+#                                  length(settings$pfts)), 
 #                                  ens.sample.method = "uniform") 
     
 
@@ -36,7 +37,7 @@ if (inherits(con, "try-error"))  {
         PEcAn.logger::logger.warn("We were not able to successfully establish 
                                   a connection with Bety ")
 } else {
-  cat(blue(paste0(" DB opens")))
+  cat(blue(paste0("\n DB opens \n")))
 }
 
 # First: loop for getting outdir -----------------------------------------------
@@ -64,9 +65,10 @@ for (i.pft in seq_along(pfts)) {
             print("step 3")
             
         }
-        # Modify outdir that I got previously for reading Rdata from folder
+        # I Modify the outdir that I got previously for reading Rdata from my 
+        # folder
         outdirs <- paste0("~/", outdirs)
-        print(cat(blue(paste0("\n Outdir: ", outdirs))))        
+        cat(blue(paste0("\n Outdir: ",outdirs)))
 }   
 
 
@@ -110,9 +112,9 @@ if(file.exists(fname)){
 
 if(!exists("prior.distns")) {
     load(file.path(outdirs[1], "prior.distns.Rdata"))
-    cat(blue(paste0("\n prior.distns loaded")))
+    cat(blue(paste0("\n prior.distns loaded \n")))
     } else {
-      print(cat(blue(paste0("\n prior.distns previously loaded"))))
+      cat(blue(paste0("\n prior.distns previously loaded \n")))
 }
 
 
@@ -155,12 +157,12 @@ if (!is.null(settings$pfts[[1]]$posteriorid) && !inherits(con, "try-error")) {
                         ma.results <- TRUE
                         load(file.path(outdirs[1], "trait.mcmc.Rdata"))
                         print("File updated")
-                        cat(blue(paste0("\n trait mcmc data  loaded")))
+                        cat(blue(paste0("\n trait mcmc data  loaded \n")))
         } else {
             ma.results <- FALSE}
 
 if(exists("trait.mcmc")) {
-  print(cat(blue(paste0("\n trait.mcmc.RData loaded"))))
+  cat(blue(paste0("\n trait.mcmc.RData loaded \n")))
 } 
         
 ## When no ma for a trait, sample from prior -----------------------------------
@@ -181,19 +183,23 @@ if (exists("trait.mcmc")) {
             if (length(param.names[[1]]) > 0) {
                 PEcAn.logger::logger.info("PFT", pft.names[1], 
                                           "has MCMC samples for:\n",
-                                          paste0(param.names[[1]], collapse = "\n "))
+                                          paste0(param.names[[1]], 
+                                                 collapse = "\n "))
             }
             if (!all(priors %in% param.names[[1]])) {
                 PEcAn.logger::logger.info("PFT", pft.names[1], 
                                           "will use prior distributions for:\n", 
-                                          paste0(priors[!priors %in% param.names[[1]]], collapse = "\n "))
+                                          paste0(priors[!priors %in% param.names[[1]]], 
+                                                 collapse = "\n "))
             }
-        #} else {
-        #    param.names[[1]] <- list()
-        #    samples.num <- 20000
-        #    PEcAn.logger::logger.info("No MCMC results for PFT", pft.names[i])
-        #    PEcAn.logger::logger.info("PFT", pft.names[i], "will use prior distributions for", 
-        #                              priors)
+        } else {
+          
+            param.names[[1]] <- list()
+            samples.num <- 20000
+            PEcAn.logger::logger.info("No MCMC results for PFT", pft.names[i])
+            PEcAn.logger::logger.info("PFT", pft.names[i], 
+                                      "will use prior distributions for", 
+                                      priors)
         }
         
 PEcAn.logger::logger.info("using ", samples.num, "samples per trait")
@@ -201,16 +207,19 @@ PEcAn.logger::logger.info("using ", samples.num, "samples per trait")
 ## Ensemble sampling method ----------------------------------------------------
 
 if (ens.sample.method == "halton") {
-            q_samples <- randtoolbox::halton(n = samples.num, dim = length(priors))
+            q_samples <- randtoolbox::halton(n = samples.num, 
+                                             dim = length(priors))
             print("Halton used")
             
         } else if (ens.sample.method == "sobol") {
-            q_samples <- randtoolbox::sobol(n = samples.num, dim = length(priors), 
+            q_samples <- randtoolbox::sobol(n = samples.num, 
+                                            dim = length(priors), 
                                             scrambling = 3)
             print("sobol used")
         
         } else if (ens.sample.method == "torus") {
-            q_samples <- randtoolbox::torus(n = samples.num, dim = length(priors))
+            q_samples <- randtoolbox::torus(n = samples.num, 
+                                            dim = length(priors))
             print("torus used")
             
         } else if (ens.sample.method == "lhc") {
@@ -222,7 +231,7 @@ if (ens.sample.method == "halton") {
             q_samples <- matrix(stats::runif(samples.num * length(priors)),
                                 samples.num, 
                                 length(priors))
-            cat(blue(paste0("\n Ensemble sampling method: Uniform ")))
+            cat(blue(paste0("\n Ensemble sampling method: Uniform \n")))
             
         } else {
             PEcAn.logger::logger.info("Method ", ens.sample.method, " has not 
@@ -244,11 +253,11 @@ for (prior in priors) {
                 
             } else {
                 samples <- PEcAn.priors::get.sample(prior.distns[prior, ], 
-                                                    samples.num, q_samples[, priors==prior])
+                                                    samples.num, 
+                                                    q_samples[, priors==prior])
             }
             trait.samples[[pft.name]][[prior]] <- samples
         }
-
 
 # Third: Get sensitivity and ensemble samples  ---------------------------------
 
@@ -271,6 +280,7 @@ if ("sensitivity.analysis" %in% names(settings)) {
         
         # Get info on the years to run the sensitivity analysis (if requested)
         sa.years <- data.frame(sa.start = settings$sensitivity.analysis$start.year, 
+                               
                                sa.end = settings$sensitivity.analysis$end.year)
         
         PEcAn.logger::logger.info("\n Selected Quantiles: ", 
@@ -281,7 +291,7 @@ if ("sensitivity.analysis" %in% names(settings)) {
                                          quantiles = quantiles)
         
         if(exists("sa.samples")) {
-          print(cat(blue(paste0("\n Sensitivity samples generated "))))} 
+          cat(blue(paste0("\n Sensitivity samples generated \n")))} 
         
 }
 
@@ -308,15 +318,15 @@ if ("ensemble" %in% names(settings)) {
                                                      param.names)}
   
         if(exists("ensemble.samples")) {
-          print(cat(blue(paste0("\n Ensemble samples generated "))))} 
+          cat(blue(paste0("\n Ensemble samples generated \n")))} 
 }
 
 # save samples -----------------------------------------------------------------
 save(ensemble.samples, trait.samples, sa.samples, runs.samples, env.samples, 
-         file = file.path(settings$outdir, "samples.Rdata"))
+         file = file.path(settings$outdir, "my_samples.Rdata"))
 
 if(exists("samples") & exists(c("ensemble.samples", "trait.samples", "sa.samples", "runs.samples"))){
-  cat(blue(paste0("\n Samples stored in samples.Rdata file:\n ensemble.samples,\n trait.samples,\n sa.samples,\n runs.samples ")))} 
+  cat(blue(paste0("\n Samples stored in my_samples.Rdata file:\n ensemble.samples,\n trait.samples,\n sa.samples,\n runs.samples \n")))} 
 
 
 # End --------------------------------------------------------------------------
