@@ -33,6 +33,8 @@ rm(list = ls())
 setwd('/home/carya')
 getwd()
 
+# 
+options(scipen=999)
 
 # Load packages ----------------------------------------------------------------
 library(rlang)
@@ -150,10 +152,10 @@ if (is.null(restart)){
         ensemble.id <- NA
     }
     
-    ### Tags requiered ---------------------------------------------------------
+    ### Tags required the model ------------------------------------------------
     # Lets first find out what tags are required for this model
     
-    # If 5
+    # If 5: get the tags that the model MUST have 
     if (!is.null(con)){
         cat(blue(paste0("\n if 5 ran \n ")))
         
