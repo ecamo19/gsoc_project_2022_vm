@@ -39,7 +39,7 @@ path <- paste0('gsoc_project_2022/pecan_runs/pecan_run_salix')
 settings$outdir <- file.path(path)
 
 # Modify xml
-settings$ensemble$size <- 10
+settings$ensemble$size <- 5
 
 settings$database$dbfiles <- file.path(settings$outdir, 'dbfiles')
 
