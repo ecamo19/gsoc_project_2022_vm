@@ -1,5 +1,4 @@
 <pecan>
-  
   <database>
     <bety>
       <driver>PostgreSQL</driver>
@@ -15,15 +14,16 @@
   <workflow>
     <id>1000019857</id>
   </workflow>
+  
   <pfts>
     <pft>
       <name>salix</name>
     </pft>
   </pfts>
+  
   <ensemble>
       <size>10</size>
       <variable>AbvGrndWood</variable>
-  
       <samplingspace>
           <met>
               <method>sampling</method>
@@ -40,12 +40,14 @@
       </samplingspace>
       <ensemble.id>1000033780</ensemble.id>
  </ensemble>
+ 
   <meta.analysis>
     <iter>3000</iter>
     <random.effects>FALSE</random.effects>
     <threshold>1.2</threshold>
     <update>AUTO</update>
   </meta.analysis>
+  
   <sensitivity.analysis>
     <quantiles>
       <sigma>-1</sigma>
@@ -53,28 +55,40 @@
     </quantiles>
     <variable>AbvGrndWood</variable>
   </sensitivity.analysis>
+  
   <model>
     <id>7</id>
-  <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
+    <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
     <revision>0.95</revision>
   </model>
+  
   <run>
     <site>
       <id>288</id>
       <lat>31.40</lat>
       <lon>-81.37</lon>
     </site>
+    
     <inputs>
+      
       <met>
         <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/</output>
         <path>~/gsoc_project_2022/data/US-Bo1</path>
       </met>
-    
+      
+      <veg>
+        <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/</output>
+        <path>~/gsoc_project_2022/data/hwsd.nc</path>
+      </veg>
+      
     </inputs>
-      <start.date>2004/01/01</start.date>
-      <end.date>2004/12/30</end.date>
+    
+    <start.date>2004/01/01</start.date>
+    <end.date>2004/12/30</end.date>
+    
     <host>
       <name>localhost</name>
     </host>
+    
   </run>
   </pecan>
