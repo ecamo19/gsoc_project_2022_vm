@@ -24,22 +24,8 @@
   <ensemble>
       <size>10</size>
       <variable>AbvGrndWood</variable>
-      <samplingspace>
-          <met>
-              <method>sampling</method>
-          </met>
-      
-          <soil>
-              <parent>parameters</parent>
-          </soil>
-   
-          <vegetation>
-              <parent>soil</parent>
-          </vegetation>
-          
-      </samplingspace>
       <ensemble.id>1000033780</ensemble.id>
- </ensemble>
+  </ensemble>
  
   <meta.analysis>
     <iter>3000</iter>
