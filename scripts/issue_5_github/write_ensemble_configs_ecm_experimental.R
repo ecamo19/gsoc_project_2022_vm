@@ -156,8 +156,7 @@ if (is.null(restart)){
     # Lets first find out what tags are required for this model
     
     # If 5: get the tags that the model MUST have 
-    if (!is.null(con)){
-        cat(blue(paste0("\n if 5 ran \n ")))
+    if(!is.null(con)){
         
         required_tags <- dplyr::tbl(con, 'models') %>%
             dplyr::filter(.data$id == !!as.numeric(settings$model$id)) %>%
@@ -170,10 +169,17 @@ if (is.null(restart)){
             dplyr::filter(.data$required == TRUE) %>%
             dplyr::pull(.data$tag)
         
-    } else {
+        # Get input tags specified in the <input></input> xml file 
+        if(length(names(settings$run$inputs)) > 0){
+            
+            input_tags <-  c(names(settings$run$inputs))} 
+        
+        # Combine required_tags and input_tags  
+        required_tags <- union(required_tags,input_tags)
+        
+    } else{
         
         required_tags <- c("met","parameters")
-        
     }
     
     # now looking into the xml
