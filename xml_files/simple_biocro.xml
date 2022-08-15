@@ -25,6 +25,21 @@
       <size>5</size>
       <variable>AbvGrndWood</variable>
       <ensemble.id>1000033780</ensemble.id>
+      
+      <samplingspace>
+      <parameters>
+      <method>lhc</method>
+      </parameters>
+      
+      <met>
+      <method>sampling</method>
+      </met>
+      
+      <veg>
+          <method>sampling</method>
+      </veg>
+      </samplingspace>
+
   </ensemble>
  
   <meta.analysis>
@@ -53,6 +68,11 @@
       <id>288</id>
       <lat>31.40</lat>
       <lon>-81.37</lon>
+      <site.pft> 
+      <pft.name>
+        salix
+      </pft.name>
+      </site.pft>
     </site>
     
     <inputs>
