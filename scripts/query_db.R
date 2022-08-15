@@ -15,8 +15,11 @@ DBI::dbListTables(con)
 
 # Query db ---------------------------------------------------------------------
 
-dplyr::tbl(con, "inputs")  %>%  
-    filter( id == 303) 
+dplyr::tbl(con, "inputs_runs") %>% 
+    arrange()
+    dplyr::select(name) %>% 
+    head(11)
+    
     select(city,state)
     
 dplyr::tbl(con, 'sites') %>% 
