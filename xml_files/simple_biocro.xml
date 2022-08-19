@@ -27,12 +27,13 @@
       <ensemble.id>1000033780</ensemble.id>
       
       <samplingspace>
+        
       <parameters>
-      <method>lhc</method>
+        <method>lhc</method>
       </parameters>
       
       <met>
-      <method>sampling</method>
+        <method>sampling</method>
       </met>
       
       <veg>
@@ -77,13 +78,14 @@
       
       <met>
         <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/</output>
-        <path1>~/gsoc_project_2022/data/US-Bo1</path1>
+        <path>~/gsoc_project_2022/data/biocromet</path>
       </met>
       
+      <!--soil-->
       <veg>
         <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/</output>
-        <path2>~/gsoc_project_2022/data/hwsd.nc</path2>
-      </veg>
+        <path>~/gsoc_project_2022/data/hwsd.nc</path>
+      </veg> 
       
     </inputs>
     
