@@ -75,9 +75,12 @@
     </site>
     
     <inputs>
+      
       <met>
           <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/</output>
-          <path>~/gsoc_project_2022/data/US.Bo1</path>        
+          <path>
+            <path32>~/gsoc_project_2022/data/biocromet/stlew-39.375--99.875.2010.csv</path32>           
+         </path>        
       </met>
       
       <!--soil-->
@@ -88,8 +91,8 @@
       
     </inputs>
     
-    <start.date>2008/01/01</start.date>
-    <end.date> 2008/12/31</end.date>
+    <!--start.date>2008</start.date-->
+    <!--end.date>2008</end.date-->
     
     <host>
       <name>localhost</name>
