@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- https://github.com/PecanProject/pecan/blob/ee38544e1c995f47073019bd31b3179e7e64991a/tests/pecan64.sipnet.xml -->
+
+<pecan>
+  <info>
+    <notes/>
+    <userid>-1</userid>
+    <username/>
+    <date>2022/08/24 00:34:26 +0000</date>
+  </info>
+  <outdir>gsoc_project_2022/pecan_runs/pecan_run_sipnet/data/workflows/PEcAn_99000000004</outdir>
+  <database>
+    <bety>
+      <user>bety</user>
+      <password>bety</password>
+      <host>postgres</host>
+      <port>5432</port>
+      <dbname>bety</dbname>
+      <driver>PostgreSQL</driver>
+      <write>true</write>
+    </bety>
+    <dbfiles>/data/dbfiles</dbfiles>
+  <pfts>
+    <pft>
+      <name>temperate.coniferous</name> 
+    </pft>
+  </pfts>
+  <meta.analysis>
+    <iter>3000</iter>
+    <random.effects>
+     <on>FALSE</on>
+     <use_ghs>TRUE</use_ghs>
+    </random.effects>
+  </meta.analysis>
+  <ensemble>
+   <size>1</size>
+   <variable>NPP</variable>
+   <samplingspace>
+   <parameters>
+    <method>uniform</method>
+   </parameters>
+   <met>
+    <method>sampling</method>
+ 	</met>
+   </samplingspace>
+  </ensemble>
+  <model>
+    <binary>/home/carya/gsoc_project_2022/models/sipnet_unk</binary>
+    <type>SIPNET</type>
+  </model>
+  <workflow>
+    <id>99000000004</id>
+  </workflow>
+  <run>
+    <site>
+      <id>772</id>
+      <met.start>2002-01-01 00:00:00</met.start>
+      <met.end>2005-12-31 00:00:00</met.end>
+    </site>
+    <inputs>
+      <met>
+        <id>5000000005</id>
+      </met>
+    </inputs>
+    <start.date>2003/01/01</start.date>
+    <end.date>2004/12/31</end.date>
+  </run>
+  <host>
+    <name>localhost</name>
+    <rabbitmq>
+      <uri>amqp://guest:guest@rabbitmq/%2F</uri>
+      <queue>SIPNET_r136</queue>
+    </rabbitmq>
+  </host>
+</pecan>

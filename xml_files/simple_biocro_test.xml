@@ -1,0 +1,102 @@
+<pecan>
+  <database>
+    <bety>
+      <driver>PostgreSQL</driver>
+      <user>bety</user>
+      <password>bety</password>
+      <host>postgres</host>
+      <dbname>bety</dbname>
+      <write>TRUE</write>
+    </bety>
+    <dbfiles>/home/carya/gsoc_project_2022/pecan_runs/pecan_run_salix/dbfiles</dbfiles>
+  </database>
+
+  <workflow>
+    <id>1000019857</id>
+  </workflow>
+  
+  <pfts>
+    <pft>
+      <name>salix</name>
+    </pft>
+  </pfts>
+  
+  <ensemble>
+      <size>5</size>
+      <variable>AbvGrndWood</variable>
+      <ensemble.id>1000033780</ensemble.id>
+      
+      <samplingspace>
+        
+      <parameters>
+        <method>lhc</method>
+      </parameters>
+      
+      <met>
+        <method>sampling</method>
+      </met>
+      
+      <veg>
+          <method>sampling</method>
+      </veg>
+      </samplingspace>
+
+  </ensemble>
+ 
+  <meta.analysis>
+    <iter>3000</iter>
+    <random.effects>FALSE</random.effects>
+    <threshold>1.2</threshold>
+    <update>AUTO</update>
+  </meta.analysis>
+  
+  <sensitivity.analysis>
+    <quantiles>
+      <sigma>-1</sigma>
+      <sigma>1</sigma>
+    </quantiles>
+    <variable>AbvGrndWood</variable>
+  </sensitivity.analysis>
+  
+  <model>
+    <id>7</id>
+    <binary>~/gsoc_project_2022/models/biocro.Rscript</binary>
+    <revision>0.95</revision>
+  </model>
+  
+  <run>
+    <site>
+      <id>288</id>
+      <lat>31.40</lat>
+      <lon>-81.37</lon>
+      <site.pft> 
+      <pft.name>salix</pft.name>
+      </site.pft>
+    </site>
+    
+    <inputs>
+      
+      <met>
+          <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/</output>
+          <path>
+            <path32>~/gsoc_project_2022/data/biocromet/stlew-39.375--99.875.2010.csv</path32>           
+         </path>        
+      </met>
+      
+      <!--soil-->
+      <veg>
+        <output>~/gsoc_project_2022/pecan_runs/pecan_run_salix/run/</output>
+        <path>~/gsoc_project_2022/data/hwsd.nc</path>
+      </veg> 
+      
+    </inputs>
+    
+    <!--start.date>2008</start.date-->
+    <!--end.date>2008</end.date-->
+    
+    <host>
+      <name>localhost</name>
+    </host>
+    
+  </run>
+  </pecan>
