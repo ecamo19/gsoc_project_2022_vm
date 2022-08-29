@@ -1,5 +1,4 @@
 # Load settings  ---------------------------------------------------------------
-
 source("./scripts/load_configs_settings.R")
 
 
@@ -15,7 +14,12 @@ DBI::dbListTables(con)
 
 # Query db ---------------------------------------------------------------------
 
+dplyr::tbl(con, "sites") 
+    print(n = 10)
+
+
 dplyr::tbl(con, "inputs_runs") %>% 
+    print(n = 100)
     arrange()
     dplyr::select(name) %>% 
     head(11)
