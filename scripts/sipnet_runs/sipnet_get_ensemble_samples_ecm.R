@@ -7,10 +7,10 @@ getwd()
 rm(list = ls())
 
 # Load settings and .RData -----------------------------------------------------
-source("~/gsoc_project_2022/scripts/load_configs_settings.R")
+source("~/gsoc_project_2022/scripts/sipnet_runs/load_sipnet_configs_settings.R")
 
-load("./pecan_runs/pecan_run_salix/my_samples.Rdata")
-load("./pecan_runs/pecan_run_salix/pft/salix/trait.mcmc.Rdata")
+load("./pecan_runs/PEcAn_99000000012/my_samples.Rdata")
+load("./pecan_runs/PEcAn_99000000012/pft/temperate.coniferous/trait.mcmc.Rdata")
 
 # Function parameters ----------------------------------------------------------
 # Get parameter values used in ensemble
@@ -297,7 +297,7 @@ as.data.frame(ensemble.samples) %>%
 
   
 # Clean environment ------------------------------------------------------------
-rm(list=setdiff(ls(), "ensemble.samples"))
+rm(list = setdiff(ls(), "ensemble.samples"))
 cat(crayon::blue(paste0("\n Ensemble samples dataframe created \n")))
 
 

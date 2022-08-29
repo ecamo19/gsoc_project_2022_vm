@@ -6,7 +6,7 @@ getwd()
 rm(list = ls())
 
 # Load settings ----------------------------------------------------------------
-source("~/gsoc_project_2022/scripts/load_configs_settings.R")
+source("~/gsoc_project_2022/scripts/sipnet_runs/load_sipnet_configs_settings.R")
 
 # Get general info: extract pft names ------------------------------------------
 
@@ -19,9 +19,9 @@ source("~/gsoc_project_2022/scripts/load_configs_settings.R")
 #                                  ens.sample.method = "uniform") 
     
 
-posterior.files <- load("./pecan_runs/pecan_run_salix/pft/salix/prior.distns.Rdata")
+posterior.files <- load("./pecan_runs/PEcAn_99000000012/pft/temperate.coniferous/post.distns.Rdata")
 
-ens.sample.method = "uniform"
+ens.sample.method <-  "uniform"
 pfts      <- settings$pfts
 num.pfts  <- length(settings$pfts)
 pft.names <- list()
@@ -29,8 +29,7 @@ outdirs   <- list()
     
 # Open database connection
 con <- try(PEcAn.DB::db.open(settings$database$bety))
-#on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
-    
+
 # If we fail to connect to DB then we set to NULL
 if (inherits(con, "try-error"))  {
         con <- NULL
@@ -323,7 +322,7 @@ if ("ensemble" %in% names(settings)) {
 
 # save samples -----------------------------------------------------------------
 save(ensemble.samples, trait.samples, sa.samples, runs.samples, env.samples, 
-         file = file.path(settings$outdir, "my_samples.Rdata"))
+         file = file.path("~/gsoc_project_2022/pecan_runs/PEcAn_99000000012/", "my_samples.Rdata"))
 
 if(exists("samples") & exists(c("ensemble.samples", "trait.samples", "sa.samples", "runs.samples"))){
   cat(blue(paste0("\n Samples stored in my_samples.Rdata file:\n ensemble.samples,\n trait.samples,\n sa.samples,\n runs.samples \n")))} 
