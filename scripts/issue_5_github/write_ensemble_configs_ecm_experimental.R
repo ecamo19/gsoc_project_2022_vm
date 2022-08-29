@@ -40,7 +40,6 @@ options(scipen=999)
 library(rlang)
 library(dplyr)
 library(PEcAn.all)
-library(BioCro)
 library(crayon)
 
 # Load setting and data --------------------------------------------------------
@@ -91,12 +90,12 @@ write.to.db <- as.logical(settings$database$bety$write)
 # If 2
 if(write.to.db){
     
-    cat(blue(paste0("\n if 2 ran\n ")))
+    cat(blue(paste0("\n if 2 ran, conection db  \n ")))
     
     # Open connection to database so we can store all run/ensemble information
     con <-
         try(PEcAn.DB::db.open(settings$database$bety))
-    on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
+        on.exit(try(PEcAn.DB::db.close(con), silent = TRUE), add = TRUE)
     
     # If we fail to connect to DB then we set to NULL
     if (inherits(con, "try-error"))  {
@@ -111,7 +110,7 @@ if(write.to.db){
 # If 3 
 if (!is.null(settings$workflow$id)) {
     
-    cat(blue(paste0("\n if 3 ran \n ")))
+    cat(blue(paste0("\n if 3 ran, workflow id \n ")))
     workflow.id <- settings$workflow$id
     print(workflow.id)
     
@@ -126,7 +125,7 @@ if (!is.null(settings$workflow$id)) {
 
 ## If this is a new fresh run --------------------------------------------------
 
-### Get ensemble.id -------------------------------------------------------------
+### Get ensemble.id ------------------------------------------------------------
 
 if (is.null(restart)){
     
@@ -135,7 +134,6 @@ if (is.null(restart)){
     # create an ensemble id
     if(!is.null(con) && write.to.db){
         
-        cat(blue(paste0("\n if 4 ran \n ")))
         
         # write ensemble first
         ensemble.id <- PEcAn.DB::db.query(paste0(
@@ -143,44 +141,47 @@ if (is.null(restart)){
             "VALUES ('ensemble', ", format(workflow.id, scientific = FALSE), ")",
             "RETURNING id"), con = con)[['id']]
         
+        cat(blue(paste0("\n if 4 ran ensemble.id: ", ensemble.id, " \n ")))
+        
+        
+        cat(blue(paste0("\n if 4 ran db call: ", " \n ")))
         for (pft in defaults) {
-            PEcAn.DB::db.query(paste0(
+            print(PEcAn.DB::db.query(paste0(
                 "INSERT INTO posteriors_ensembles (posterior_id, ensemble_id) ",
-                "values (", pft$posteriorid, ", ", ensemble.id, ")"), con = con) }
+                "values (", pft$posteriorid, ", ", ensemble.id, ")"), con = con)) }
         
     } else {
         ensemble.id <- NA
     }
     
-    ### Tags required the model ------------------------------------------------
+    ### Get input tags required for the model ----------------------------------
     # Lets first find out what tags are required for this model
     
     # If 5: get the tags that the model MUST have 
     if(!is.null(con)){
         
-        required_tags <- dplyr::tbl(con, 'models') %>%
-            dplyr::filter(.data$id == !!as.numeric(settings$model$id)) %>%
-            
-            dplyr::inner_join(dplyr::tbl(con, "modeltypes_formats"), 
-                              by = c('modeltype_id')) %>%
-            
-            dplyr::collect() %>%
-            
-            dplyr::filter(.data$required == TRUE) %>%
+      required_tags <- 
+        
+        dplyr::tbl(con, 'models') %>%
+          dplyr::filter(.data$id == !!as.numeric(settings$model$id)) %>%
+          
+          dplyr::inner_join(dplyr::tbl(con, "modeltypes_formats"), 
+                            by = c('modeltype_id')) %>%
+          
+          dplyr::collect() %>%
+          
+          dplyr::filter(.data$required == TRUE) %>%
             dplyr::pull(.data$tag)
         
         # Get input tags specified in the <input></input> xml file 
-        if(length(names(settings$run$inputs)) > 0){
-            
-            input_tags <-  c(names(settings$run$inputs))} 
-        
-        # Combine required_tags and input_tags  
-        required_tags <- union(required_tags,input_tags)
+  
         
     } else{
         
         required_tags <- c("met","parameters")
     }
+    
+    ### ------------------------------------------------------------------------
     
     # now looking into the xml
     samp <- settings$ensemble$samplingspace
@@ -195,12 +196,16 @@ if (is.null(restart)){
     # new ordered sampling space
     samp.ordered <- samp[c(order, names(samp)[!(names(samp) %in% order)])]
     
+    ### Samples object ---------------------------------------------------------
+    
     # performing the sampling
+    
     samples <- list()
     
-    # for 1 run $met$ids here
+    # for 1, run $met$ids here
     for(i in seq_along(samp.ordered)){
         
+        cat(blue(paste0("\n For 1 ran \n ")))
         # do I have a parent ?
         myparent <- samp.ordered[[i]]$parent 
         
@@ -212,16 +217,16 @@ if (is.null(restart)){
                                                            # if I have parent then give me their ids - this is 
                                                            # where the ordering matters making sure the parent 
                                                            # is done before it's asked
-                                                           parent_ids = if(!is.null(myparent)) samples[[myparent]] 
-                                                           
-        )
+                                                           parent_ids = if(!is.null(myparent)) samples[[myparent]])
+        cat(blue(paste0("\n if 4 samples object: ", " \n ")))
         print(samples) # delete
-        cat(blue(paste0("\n For 1 ran \n ")))
+        
     } 
     
     # if there is a tag required by the model but it is not specified in the xml 
     # then I replicate n times the first element 
     
+     
     required_tags %>%
         
         purrr::walk(function(r_tag){
@@ -234,12 +239,21 @@ if (is.null(restart)){
             cat(blue(paste0("\n if 6 ran \n ")))
         })
     
+    cat(blue(paste0("\n samples object after purrr::walk(function(r_tag) : ", " \n ")))
+    print(samples) # delete
+    
+    ### Reading site pft -------------------------------------------------------
+    
     # Reading the site.pft specific tags from xml
     # Returns character(0)
     
-    # HERE defined.pfts site.pfts.vec but dont consider the character(0)
-    # 
+    # HERE defined.pfts site.pfts.vec are created 
+    # but dont consider the character(0)
+    
+    
+    # Should it be NULL?
     site.pfts.vec <- settings$run$site$site.pft %>% unlist %>% as.character
+  
     
     # If 7
     if (!is.null(site.pfts.vec)) {
@@ -261,7 +275,9 @@ if (is.null(restart)){
         }
         
         # If 9
-        # warn if there is a pft specified in the site but it's not defined in the pecan xml.
+        # warn if there is a pft specified in the site but it's not defined in 
+        # the pecan xml.
+        
         if(length(which(!(site.pfts.vec %in% defined.pfts))) > 0){
             PEcAn.logger::logger.warn(
                 paste0(
@@ -277,10 +293,15 @@ if (is.null(restart)){
         }
     }
     
+    ### ------------------------------------------------------------------------
     # If 10
-    # if no ensemble piece was in the xml I replicate n times the first element in params
-    if (is.null(samp$parameters)){            
-        samples$parameters$samples <- ensemble.samples %>% 
+    # if no ensemble piece was in the xml I replicate n times the first element 
+    # in params
+    
+    if (is.null(samp$parameters)){
+        
+        samples$parameters$samples <- 
+            ensemble.samples %>%
             purrr::map(~.x[rep(1, settings$ensemble$size), ])
         
         cat(blue(paste0("\n if 10 ran \n ")))
@@ -291,9 +312,11 @@ if (is.null(restart)){
     
     # If 11
     if(is.null(samples$parameters$samples)){ 
+        
         samples$parameters$samples <- ensemble.samples
         
-        cat(blue(paste0("\n if 11 ran \n ")))
+        cat(blue(paste0("\n if 11 ran, samples$parameters$samples object: \n ")))
+        print(samples$parameters$samples)        
     }
     
     
@@ -301,13 +324,19 @@ if (is.null(restart)){
     # find all inputs that have an id
     inputs <- names(settings$run$inputs)
     
-    # met id? # This step is necessary
-    inputs <- inputs[grepl(".id$", inputs)]
+    # met id veg id? # This step IS A MUST
+    #inputs <- inputs[grepl(".id$", inputs)]
+    inputs <- NULL
+    #inputs
+    
     runs <- data.frame()
     
     for (i in seq_len(settings$ensemble$size)) {
         
+        # if 12
         if (!is.null(con) && write.to.db) {
+            
+            cat(blue(paste0("\n if 12 ran \n ")))
             
             paramlist <- paste("ensemble=", i, sep = "")
             
@@ -324,24 +353,38 @@ if (is.null(restart)){
                 ensemble.id, ", '", 
                 paramlist, "') ",
                 "RETURNING id"), con = con)[['id']]
+            
             # associate inputs with runs
             
+            # Here inputs is not null however is character(0)
             if(!is.null(inputs)) {
+                
+                # if 13
+                cat(blue(paste0("\n if 13 ran \n ")))
+                
+                # ISSUE HERE inputs is character(0)
                 for (x in inputs) {
+                    print(settings$run$inputs[[x]])
                     PEcAn.DB::db.query(paste0("INSERT INTO inputs_runs (input_id, run_id) ",
                                               "values (", settings$run$inputs[[x]], ", ", run.id, ")"), 
                                        con = con)
                 }
             }
             
-        } else{
-            run.id <- PEcAn.utils::get.run.id("ENS", PEcAn.utils::left.pad.zeros(1, 5), 
-                                              site.id = settings$run$site$id)
+            } else {
+                run.id <- PEcAn.utils::get.run.id("ENS", 
+                                                  PEcAn.utils::left.pad.zeros(1, 5),
+                                                  site.id = settings$run$site$id)
+                print("test")
         }
         runs[i, "id"] <- run.id    
+        cat(blue(runs))
         
         # create folders (cleaning up old ones if needed)
-        if (clean) {
+        if (clean) {   
+            
+            cat(blue(paste0("\n if 14 ran \n ")))
+            
             unlink(file.path(settings$rundir, run.id))
             unlink(file.path(settings$modeloutdir, run.id))
         }
@@ -361,6 +404,7 @@ if (is.null(restart)){
             "site        : ", settings$run$site$name, "\n",
             "site  id    : ", format(settings$run$site$id, scientific = FALSE), "\n",
             "met data    : ", samples$met$samples[[i]], "\n",
+            "veg data    : ", samples$veg$samples[[i]], "\n",
             "start date  : ", settings$run$start.date, "\n",
             "end date    : ", settings$run$end.date, "\n",
             "hostname    : ", settings$host$name, "\n",
@@ -370,24 +414,27 @@ if (is.null(restart)){
         
         # changing the structure of input tag to what the 
         # models are expecting
+        
+        ### Uses 
         for(input_i in seq_along(settings$run$inputs)){
             
             input_tag <- names(settings$run$inputs)[[input_i]]
             
             if (!is.null(samples[[input_tag]]))
-                settings$run$inputs[[input_tag]][["path"]] <-
-                    samples[[input_tag]][["samples"]][[i]]
+                
+                settings$run$inputs[[input_tag]][["path"]] <- samples[[input_tag]][["samples"]][[i]]
         }
-        
-        #Error in write.config.BIOCRO(defaults = list(pft = list(name = "salix",  : 
-        #                                                            could not find function "write.config.BIOCRO"
         
         do.call(my.write.config, args = list(defaults = defaults, 
                                              trait.values = lapply(samples$parameters$samples, 
-                                                                   function(x, n) { x[n, , drop=FALSE] }, n=i), # this is the params
+                                                                   function(x, n) { x[n, , drop=FALSE] }, n = i), # this is the params
                                              settings = settings, 
                                              run.id = run.id))
-        cat(format(run.id, scientific = FALSE), file = file.path(settings$rundir, "test_runs.txt"), sep = "\n", append = TRUE)
+        
+        cat(format(run.id, scientific = FALSE), file = file.path(settings$rundir, 
+                                                                 "test_runs.txt"),
+            sep = "\n", 
+            append = TRUE)
         
     }
     #return(invisible(
