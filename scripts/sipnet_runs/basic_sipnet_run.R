@@ -20,7 +20,7 @@ rm(list = ls())
 # Read settings file -----------------------------------------------------------
 setwd("/home/carya/")
 
-settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/v4_sipnet.xml")
+settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/v4_harvard_sipnet.xml")
 
 # Configure settings -----------------------------------------------------------
 
@@ -31,7 +31,7 @@ settings$ensemble$samplingspace$parameters$method <- 'lhc'
 
 # PEcAn Workflow ---------------------------------------------------------------
 
-## Load required libraries ------------------------------------------------------
+## Load required libraries -----------------------------------------------------
 library("PEcAn.all")
 library("RCurl")
 

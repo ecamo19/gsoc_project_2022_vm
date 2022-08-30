@@ -18,7 +18,7 @@
         <port>5432</port>
         <dbname>bety</dbname>
         <driver>PostgreSQL</driver>
-        <write>true</write>
+        <write>TRUE</write>
       </bety>
       <dbfiles>/data/dbfiles</dbfiles>
     </database>
@@ -26,7 +26,7 @@
     <!-- Plant functional type -->
     <pfts>
       <pft>
-        <name>temperate.coniferous</name> 
+        <name>temperate.deciduous</name> 
       </pft>
     </pfts>
   
@@ -43,11 +43,10 @@
     <ensemble>
       <size>4</size>
       <variable>NPP</variable>
-      <start.year>2004</start.year>
-      <end.year>2004</end.year>
+      <start.year>2021</start.year>
+      <end.year>2021</end.year>
       
       <samplingspace>
-    
         <parameters>
             <method>uniform</method>
         </parameters>
@@ -59,33 +58,41 @@
   </ensemble>
   
   <model>
-    <id>1000000014</id>
+     <id>1000000022</id>
+     <type>SIPNET</type>
   </model>
+  
   <workflow>
     <id>99000000011</id>
   </workflow>
+  
   <run>
     <site>
-      <id>772</id>
-      <met.start>2002-01-01 00:00:00</met.start>
-      <met.end>2005-12-31 00:00:00</met.end>
+      <id>646</id>
+      <met.start>2021-06-26</met.start>
+      <met.end>2021-07-31</met.end>
+      <name>Harvard Forest (HF)</name>
+      <lat>42.5</lat>
+      <lon>-72.15</lon>
     </site>
     <inputs>
       <met>
         <id>5000000005</id>
       </met>
     </inputs>
-    <start.date>2004/01/01</start.date>
-    <end.date>2004/12/31</end.date>
-  </run>
-  <host>
-    <name>localhost</name>
-    <rabbitmq>
-      <uri>amqp://guest:guest@rabbitmq/%2F</uri>
-      <queue>SIPNET_r136</queue>
-    </rabbitmq>
-  </host>
-
-  
+    <start.date>2021-06-26</start.date>
+    <end.date>2021-07-31</end.date>
+    
+    
+    <!-- start.date>2004/01/01</start.date-->
+    <!--end.date>2004/12/31</end.date-->
+    </run>
+    <host>
+      <name>localhost</name>
+      <rabbitmq>
+          <uri>amqp://guest:guest@rabbitmq/%2F</uri>
+          <queue>SIPNET_r136</queue>
+      </rabbitmq>
+    </host>
 
 </pecan>
