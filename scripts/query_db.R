@@ -1,5 +1,5 @@
 # Load settings  ---------------------------------------------------------------
-source("./scripts/load_configs_settings.R")
+source("./scripts/sipnet_runs/load_sipnet_configs_settings.R")
 
 
 # Connect to db ----------------------------------------------------------------
@@ -14,7 +14,8 @@ DBI::dbListTables(con)
 
 # Query db ---------------------------------------------------------------------
 
-dplyr::tbl(con, "sites") 
+dplyr::tbl(con, "sites") %>% 
+    filter( id == 646)
     print(n = 10)
 
 
