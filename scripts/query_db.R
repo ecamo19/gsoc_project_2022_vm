@@ -1,4 +1,7 @@
 # Load settings  ---------------------------------------------------------------
+
+setwd("/home/carya/gsoc_project_2022/")
+
 source("./scripts/sipnet_runs/load_sipnet_configs_settings.R")
 
 
@@ -14,8 +17,13 @@ DBI::dbListTables(con)
 
 # Query db ---------------------------------------------------------------------
 
-dplyr::tbl(con, "sites") %>% 
-    filter( id == 646)
+dplyr::tbl(con, "pfts") %>% 
+    dplyr::select(name) %>% 
+    print(n = 100) %>% 
+    filter(name == "temperate.deciduous.HPDA")
+
+
+    
     print(n = 10)
 
 
