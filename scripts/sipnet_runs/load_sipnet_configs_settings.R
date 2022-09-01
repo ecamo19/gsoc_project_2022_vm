@@ -12,7 +12,7 @@ library(devtools)
 library(crayon)
 
 # Load xml file  ---------------------------------------------------------------
-settings <- read.settings("./pecan_runs/PEcAn_99000000012/pecan.CONFIGS.xml")
+settings <- read.settings("./pecan_runs/sipnet_for_comparing_not_input_specified/pecan.CONFIGS.xml")
 
 print(PEcAn.settings::check.workflow.settings(settings))
 
