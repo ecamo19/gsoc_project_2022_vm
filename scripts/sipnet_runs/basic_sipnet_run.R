@@ -20,7 +20,7 @@ rm(list = ls())
 # Read settings file -----------------------------------------------------------
 setwd("/home/carya/")
 
-settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/v4_harvard_sipnet.xml")
+settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/v4_sipnet.xml")
 
 # Configure settings -----------------------------------------------------------
 
