@@ -15,7 +15,7 @@
         <user>bety</user>
         <password>bety</password>
         <host>postgres</host>
-        <port>5432</port>
+        <!--port>5432</port-->
         <dbname>bety</dbname>
         <driver>PostgreSQL</driver>
         <write>TRUE</write>
@@ -27,6 +27,7 @@
     <pfts>
       <pft>
         <name>temperate.deciduous</name> 
+        <outdir>/data/workflows/PEcAn_99000000012/pft/temperate.deciduous</outdir>
       </pft>
     </pfts>
   
@@ -58,8 +59,9 @@
   </ensemble>
   
   <model>
-     <id>1000000022</id>
+     <id>1000000014</id>
      <type>SIPNET</type>
+     <binary>/home/carya/sipnet_r136</binary>
   </model>
   
   <workflow>
@@ -89,10 +91,10 @@
     </run>
     <host>
       <name>localhost</name>
-      <rabbitmq>
-          <uri>amqp://guest:guest@rabbitmq/%2F</uri>
-          <queue>SIPNET_r136</queue>
-      </rabbitmq>
+      <!--rabbitmq>
+          <uri>amqp://guest:guest@rabbitmq/%2F</uri-->
+          <!--queue>SIPNET_r136</queue-->
+    <!--/rabbitmq-->
     </host>
 
 </pecan>

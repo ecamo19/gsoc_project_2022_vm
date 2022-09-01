@@ -14,11 +14,11 @@
       <bety>
         <user>bety</user>
         <password>bety</password>
-        <host>postgres</host>
+      <host>postgres</host>
         <port>5432</port>
         <dbname>bety</dbname>
         <driver>PostgreSQL</driver>
-        <write>TRUE</write>
+        <write>true</write>
       </bety>
       <dbfiles>/data/dbfiles</dbfiles>
     </database>
@@ -26,7 +26,7 @@
     <!-- Plant functional type -->
     <pfts>
       <pft>
-        <name>temperate.deciduous.HPDA</name> 
+        <name>temperate.deciduous</name> 
       </pft>
     </pfts>
   
@@ -47,6 +47,7 @@
       <end.year>2021</end.year>
       
       <samplingspace>
+    
         <parameters>
             <method>uniform</method>
         </parameters>
@@ -58,14 +59,11 @@
   </ensemble>
   
   <model>
-     <id>1000000022</id>
-     <type>SIPNET</type>
+    <id>1000000014</id>
   </model>
-  
   <workflow>
     <id>99000000011</id>
   </workflow>
-  
   <run>
     <site>
       <id>646</id>
@@ -77,22 +75,33 @@
     </site>
     <inputs>
       <met>
+        <source>~/gsoc_project_2022/data/2021-06-26</source>
         <id>5000000005</id>
+        <output>SIPNET</output>
+        <id>
+          <id1>5000000005</id1>
+          <id2>5000000005</id2>
+          <id3>5000000005</id3>
+          <id4>5000000005</id4>
+        </id>
+        <path>
+          <path1>/home/carya/gsoc_project_2022/data/2021-06-26/Half_Hour_NOAAGEFS_1hr_HARV_2021-06-26T00_2021-07-12T00_ens00.clim</path1>
+          <path2>/home/carya/gsoc_project_2022/data/2021-06-26/Half_Hour_NOAAGEFS_1hr_HARV_2021-06-26T00_2021-07-31T00_ens01.clim</path2>
+          <path3>/home/carya/gsoc_project_2022/data/2021-06-26/Half_Hour_NOAAGEFS_1hr_HARV_2021-06-26T00_2021-07-31T00_ens02.clim</path3>
+          <path4>/home/carya/gsoc_project_2022/data/2021-06-26/Half_Hour_NOAAGEFS_1hr_HARV_2021-06-26T00_2021-07-31T00_ens03.clim</path4>
+        </path>
       </met>
+      
     </inputs>
     <start.date>2021-06-26</start.date>
     <end.date>2021-07-31</end.date>
-    
-    
-    <!-- start.date>2004/01/01</start.date-->
-    <!--end.date>2004/12/31</end.date-->
-    </run>
-    <host>
-      <name>localhost</name>
-      <rabbitmq>
-          <uri>amqp://guest:guest@rabbitmq/%2F</uri>
-          <queue>SIPNET_r136</queue>
-      </rabbitmq>
-    </host>
+  </run>
+  <host>
+    <name>localhost</name>
+    <rabbitmq>
+      <uri>amqp://guest:guest@rabbitmq/%2F</uri>
+      <queue>SIPNET_r136</queue>
+    </rabbitmq>
+  </host>
 
 </pecan>
