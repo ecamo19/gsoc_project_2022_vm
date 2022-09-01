@@ -35,9 +35,8 @@ settings$ensemble$samplingspace$parameters$method <- 'lhc'
 library("PEcAn.all")
 library("RCurl")
 
-
 # Open and read in settings file for PEcAn run.
-settings 
+#settings 
 
 # Check for additional modules that will require adding settings
 if ("benchmarking" %in% names(settings)) {
@@ -118,7 +117,6 @@ if (PEcAn.utils::status.check("CONFIG") == 0) {
 
 
 ## Start ecosystem model runs --------------------------------------------------
-
 PEcAn.remote::runModule.start.model.runs(settings)
 
 ### Get results of model runs --------------------------------------------------
