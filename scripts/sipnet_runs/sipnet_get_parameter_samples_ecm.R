@@ -19,7 +19,7 @@ source("~/gsoc_project_2022/scripts/sipnet_runs/load_sipnet_configs_settings.R")
 #                                  ens.sample.method = "uniform") 
     
 
-posterior.files <- load("./pecan_runs/PEcAn_99000000012/pft/temperate.coniferous/post.distns.Rdata")
+posterior.files <- load("./pecan_runs/sipnet_for_comparing_not_input_specified/pft/temperate.deciduous/post.distns.Rdata")
 
 ens.sample.method <-  "uniform"
 pfts      <- settings$pfts
@@ -322,7 +322,7 @@ if ("ensemble" %in% names(settings)) {
 
 # save samples -----------------------------------------------------------------
 save(ensemble.samples, trait.samples, sa.samples, runs.samples, env.samples, 
-         file = file.path("~/gsoc_project_2022/pecan_runs/PEcAn_99000000012/", "my_samples.Rdata"))
+         file = file.path("~/gsoc_project_2022/pecan_runs/sipnet_for_comparing_not_input_specified/", "my_samples.Rdata"))
 
 if(exists("samples") & exists(c("ensemble.samples", "trait.samples", "sa.samples", "runs.samples"))){
   cat(blue(paste0("\n Samples stored in my_samples.Rdata file:\n ensemble.samples,\n trait.samples,\n sa.samples,\n runs.samples \n")))} 

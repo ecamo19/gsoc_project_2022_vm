@@ -9,8 +9,8 @@ rm(list = ls())
 # Load settings and .RData -----------------------------------------------------
 source("~/gsoc_project_2022/scripts/sipnet_runs/load_sipnet_configs_settings.R")
 
-load("./pecan_runs/PEcAn_99000000012/my_samples.Rdata")
-load("./pecan_runs/PEcAn_99000000012/pft/temperate.coniferous/trait.mcmc.Rdata")
+load("./pecan_runs/sipnet_for_comparing_not_input_specified/my_samples.Rdata")
+load("./pecan_runs/sipnet_for_comparing_not_input_specified/pft/temperate.deciduous/trait.mcmc.Rdata")
 
 # Function parameters ----------------------------------------------------------
 # Get parameter values used in ensemble
