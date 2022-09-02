@@ -48,9 +48,9 @@ source("~/gsoc_project_2022/scripts/sipnet_runs/load_sipnet_configs_settings.R")
 source("~/gsoc_project_2022/R/write.configs.SIPNET.R")
 
 # Not sure if these are necessary 
-load("./pecan_runs/PEcAn_99000000012/samples.Rdata")
-load("./pecan_runs/PEcAn_99000000012/pft/temperate.coniferous/trait.data.Rdata")
-load("./pecan_runs/PEcAn_99000000012/pft/temperate.coniferous/trait.mcmc.Rdata")
+load("./pecan_runs/sipnet_for_comparing_not_input_specified/samples.Rdata")
+load("./pecan_runs/sipnet_for_comparing_not_input_specified/pft/temperate.deciduous/trait.data.Rdata")
+load("./pecan_runs/sipnet_for_comparing_not_input_specified/pft/temperate.deciduous/trait.mcmc.Rdata")
 
 # Test original function -------------------------------------------------------
 # PEcAn.uncertainty::write.ensemble.configs(defaults = settings$pfts,
@@ -442,3 +442,4 @@ if (is.null(restart)){
     #))
 } 
 
+samples$met$samples
