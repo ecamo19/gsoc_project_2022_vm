@@ -20,7 +20,7 @@ rm(list = ls())
 # Read settings file -----------------------------------------------------------
 setwd("/home/carya/")
 
-settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/v4_sipnet.xml")
+settings <- PEcAn.settings::read.settings("./gsoc_project_2022/xml_files/v4_harvard_sipnet.xml")
 
 # Configure settings -----------------------------------------------------------
 
@@ -62,7 +62,7 @@ if ("sitegroup" %in% names(settings)) {
 
 # Update/fix/check settings.
 # Will only run the first time it's called, unless force=TRUE
-
+error
 settings <-
     PEcAn.settings::prepare.settings(settings, force = FALSE)
 

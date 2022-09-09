@@ -77,14 +77,9 @@
     <inputs>
       <met>
         <source>~/gsoc_project_2022/data/2021-06-26</source>
-        <id>5000000005</id>
+        
         <output>SIPNET</output>
-        <id>
-          <id1>5000000005</id1>
-          <id2>5000000005</id2>
-          <id3>5000000005</id3>
-          <id4>5000000005</id4>
-        </id>
+    
         <path>
           <path1>/home/carya/gsoc_project_2022/data/2021-06-26/Half_Hour_NOAAGEFS_1hr_HARV_2021-06-26T00_2021-07-12T00_ens00.clim</path1>
           <path2>/home/carya/gsoc_project_2022/data/2021-06-26/Half_Hour_NOAAGEFS_1hr_HARV_2021-06-26T00_2021-07-31T00_ens01.clim</path2>
